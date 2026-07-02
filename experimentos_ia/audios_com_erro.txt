@@ -1,0 +1,111 @@
+=====================================================================
+RELATÓRIO DE COMPORTAMENTOS ANÔMALOS APÓS MIX DE AUGMENTATION
+=====================================================================
+
+Erro #1
+📁 Arquivo Original Relacionado: dataset_final\direita\direita_62.wav
+🎯 Real: DIREITA | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 63.56%
+------------------------------------------------------------
+Erro #2
+📁 Arquivo Original Relacionado: dataset_final\direita\direita_120.wav
+🎯 Real: DIREITA | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 88.38%
+------------------------------------------------------------
+Erro #3
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_37.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: SIGA
+📊 Confiança no Erro: 98.19%
+------------------------------------------------------------
+Erro #4
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_63.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 96.55%
+------------------------------------------------------------
+Erro #5
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_46.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: PARE
+📊 Confiança no Erro: 62.48%
+------------------------------------------------------------
+Erro #6
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_120.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 89.33%
+------------------------------------------------------------
+Erro #7
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_9.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: SIGA
+📊 Confiança no Erro: 84.63%
+------------------------------------------------------------
+Erro #8
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_65.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: SIGA
+📊 Confiança no Erro: 53.82%
+------------------------------------------------------------
+Erro #9
+📁 Arquivo Original Relacionado: dataset_final\esquerda\esquerda_53.wav
+🎯 Real: ESQUERDA | ❌ Predição Errada da IA: SIGA
+📊 Confiança no Erro: 53.15%
+------------------------------------------------------------
+Erro #10
+📁 Arquivo Original Relacionado: dataset_final\pare\pare_186.wav
+🎯 Real: PARE | ❌ Predição Errada da IA: DIREITA
+📊 Confiança no Erro: 70.82%
+------------------------------------------------------------
+Erro #11
+📁 Arquivo Original Relacionado: dataset_final\pare\pare_62.wav
+🎯 Real: PARE | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 98.94%
+------------------------------------------------------------
+Erro #12
+📁 Arquivo Original Relacionado: dataset_final\pare\pare_70.wav
+🎯 Real: PARE | ❌ Predição Errada da IA: VOLTAR
+📊 Confiança no Erro: 35.28%
+------------------------------------------------------------
+Erro #13
+📁 Arquivo Original Relacionado: dataset_final\siga\siga_125.wav
+🎯 Real: SIGA | ❌ Predição Errada da IA: DIREITA
+📊 Confiança no Erro: 71.76%
+------------------------------------------------------------
+Erro #14
+📁 Arquivo Original Relacionado: dataset_final\siga\siga_120.wav
+🎯 Real: SIGA | ❌ Predição Errada da IA: ESQUERDA
+📊 Confiança no Erro: 63.08%
+------------------------------------------------------------
+Erro #15
+📁 Arquivo Original Relacionado: dataset_final\siga\siga_187.wav
+🎯 Real: SIGA | ❌ Predição Errada da IA: DIREITA
+📊 Confiança no Erro: 69.56%
+------------------------------------------------------------
+Erro #16
+📁 Arquivo Original Relacionado: dataset_final\siga\siga_72.wav
+🎯 Real: SIGA | ❌ Predição Errada da IA: ESQUERDA
+📊 Confiança no Erro: 43.20%
+------------------------------------------------------------
+Erro #17
+📁 Arquivo Original Relacionado: dataset_final\voltar\voltar_58.wav
+🎯 Real: VOLTAR | ❌ Predição Errada da IA: PARE
+📊 Confiança no Erro: 67.05%
+------------------------------------------------------------
+Erro #18
+📁 Arquivo Original Relacionado: dataset_final\voltar\voltar_34.wav
+🎯 Real: VOLTAR | ❌ Predição Errada da IA: PARE
+📊 Confiança no Erro: 86.45%
+------------------------------------------------------------
+Erro #19
+📁 Arquivo Original Relacionado: dataset_final\voltar\voltar_192.wav
+🎯 Real: VOLTAR | ❌ Predição Errada da IA: DIREITA
+📊 Confiança no Erro: 32.56%
+------------------------------------------------------------
+Erro #20
+📁 Arquivo Original Relacionado: dataset_final\voltar\voltar_206.wav
+🎯 Real: VOLTAR | ❌ Predição Errada da IA: DIREITA
+📊 Confiança no Erro: 55.09%
+------------------------------------------------------------
+Erro #21
+📁 Arquivo Original Relacionado: dataset_final\voltar\voltar_63.wav
+🎯 Real: VOLTAR | ❌ Predição Errada da IA: RUIDO
+📊 Confiança no Erro: 98.60%
+------------------------------------------------------------
+
+Resumo: O modelo cometeu 21 erros de 239 áudios limpos testados.

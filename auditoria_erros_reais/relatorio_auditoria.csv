@@ -1,0 +1,4 @@
+Timestamp,Nome_Arquivo,Classe_Alvo_Humana,Classe_Predita_IA,Confianca_IA,Entropia_Incerteza,Motivo_Falha,Energia_Sinal_RMS
+2026-07-01 17:20:03,ALVO_direita_PREDITO_pare_CONF_45_1782937203.wav,direita,pare,45.28%,1.5963,Erro de Classificacao,0.00198
+2026-07-01 17:20:31,ALVO_pare_PREDITO_direita_CONF_30_1782937231.wav,pare,direita,30.59%,2.0321,Erro de Classificacao,0.00079
+2026-07-01 17:20:48,ALVO_pare_PREDITO_pare_CONF_64_1782937248.wav,pare,pare,64.32%,1.6784,Baixa Confianca (<75%),0.01321

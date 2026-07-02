@@ -1,0 +1,14 @@
+=====================================================================
+DIAGNÓSTICO ACÚSTICO COMPLEMENTAR DO DATASET
+=====================================================================
+
+Classe 'DIREITA': Duração Útil Média = 0.34s | Energia de Alta Freq (Sibilância) = 0.3491
+Classe 'ESQUERDA': Duração Útil Média = 0.33s | Energia de Alta Freq (Sibilância) = 0.4894
+Classe 'PARE': Duração Útil Média = 0.25s | Energia de Alta Freq (Sibilância) = 0.2051
+Classe 'RUIDO': Duração Útil Média = 0.97s | Energia de Alta Freq (Sibilância) = 0.1649
+Classe 'SIGA': Duração Útil Média = 0.33s | Energia de Alta Freq (Sibilância) = 0.6048
+Classe 'VOLTAR': Duração Útil Média = 0.32s | Energia de Alta Freq (Sibilância) = 0.2398
+
+💡 DICA DE ANÁLISE:
+- Compare o valor de 'Duração Útil Média' da classe SIGA com as outras.
+- Se a 'Energia de Alta Freq' de SIGA estiver muito baixa, o microfone do seu notebook está devorando o som do seu 'S'.

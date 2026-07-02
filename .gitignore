@@ -3,6 +3,8 @@
 /ruido_raw/
 /dataset_wav/
 /dataset_ruido/
+/dataset_aumentado/
+/dataset_ruido2/
 /dataset_vozes/
 /spectrograms/
 /spectrograms_original/

@@ -2,9 +2,7 @@ import math
 import pygame
 import matplotlib.pyplot as plt
 
-# ----------------------------------------------------------------------
-# Funções de odometria
-# ----------------------------------------------------------------------
+
 def sinc_safe(z: float) -> float:
     if abs(z) < 1e-9:
         return 1.0 - z * z / 6.0
@@ -13,9 +11,7 @@ def sinc_safe(z: float) -> float:
 def normalize_angle(angle):
     return (angle + math.pi) % (2 * math.pi) - math.pi
 
-# ----------------------------------------------------------------------
-# Configuração do labirinto
-# ----------------------------------------------------------------------
+
 WORLD_X_MIN, WORLD_X_MAX = -1.0, 5.0
 WORLD_Y_MIN, WORLD_Y_MAX = -2.0, 3.0
 FINISH_X = 4.9
@@ -37,9 +33,7 @@ WALLS = [
     (4, -1, 5, -1)
 ]
 
-# ----------------------------------------------------------------------
-# Projeção 3D com posição de câmera explícita
-# ----------------------------------------------------------------------
+
 class Camera3D:
     def __init__(self, width, height, focal_length=250, cam_height=0.8, horizon_y=None):
         self.width = width
@@ -78,9 +72,7 @@ class Camera3D:
         sy = self.horizon_y - vertical * inv_depth * self.focal_length
         return sx, sy, frente
 
-# ----------------------------------------------------------------------
-# Colisão de câmera com paredes (aprimorada)
-# ----------------------------------------------------------------------
+
 def segment_intersection(x1, y1, x2, y2, x3, y3, x4, y4):
     """Retorna t no segmento (x1,y1)->(x2,y2) da interseção, ou None."""
     denom = (x1 - x2)*(y3 - y4) - (y1 - y2)*(x3 - x4)
@@ -109,7 +101,7 @@ def adjust_camera(car_x, car_y, car_theta, desired_dist, walls, min_dist=0.3, wa
     cam_x = car_x - desired_dist * math.cos(car_theta)
     cam_y = car_y - desired_dist * math.sin(car_theta)
 
-    # 1. Verifica interseção do segmento carro -> câmera
+
     best_t = 1.0
     for (wx1, wy1, wx2, wy2) in walls:
         t = segment_intersection(car_x, car_y, cam_x, cam_y, wx1, wy1, wx2, wy2)
@@ -120,12 +112,12 @@ def adjust_camera(car_x, car_y, car_theta, desired_dist, walls, min_dist=0.3, wa
     cam_x = car_x - dist * math.cos(car_theta)
     cam_y = car_y - dist * math.sin(car_theta)
 
-    # 2. Empurra a câmera para longe de paredes muito próximas
+
     for _ in range(5):  # iterações para resolver múltiplas paredes
         for (wx1, wy1, wx2, wy2) in walls:
             d = point_segment_distance(cam_x, cam_y, wx1, wy1, wx2, wy2)
             if d < wall_margin:
-                # Calcula a normal (perpendicular ao segmento)
+           
                 dx = wx2 - wx1
                 dy = wy2 - wy1
                 length = math.hypot(dx, dy)
@@ -144,7 +136,7 @@ def adjust_camera(car_x, car_y, car_theta, desired_dist, walls, min_dist=0.3, wa
                     ny = -ny
                 cam_x += nx * push
                 cam_y += ny * push
-        # Garante distância mínima do carro
+      
         d_car = math.hypot(cam_x - car_x, cam_y - car_y)
         if d_car < min_dist:
             cam_x = car_x + (cam_x - car_x) * min_dist / d_car
@@ -152,9 +144,7 @@ def adjust_camera(car_x, car_y, car_theta, desired_dist, walls, min_dist=0.3, wa
 
     return cam_x, cam_y
 
-# ----------------------------------------------------------------------
-# Colisão carro-parede
-# ----------------------------------------------------------------------
+
 def circle_segment_collision(cx, cy, radius, x1, y1, x2, y2):
     dx = x2 - x1
     dy = y2 - y1
@@ -167,9 +157,7 @@ def circle_segment_collision(cx, cy, radius, x1, y1, x2, y2):
     dist_sq = (cx - closest_x)**2 + (cy - closest_y)**2
     return dist_sq <= radius**2
 
-# ----------------------------------------------------------------------
-# Projeção de cuboide (carro)
-# ----------------------------------------------------------------------
+
 def project_cuboid(cam, car_x, car_y, car_theta, pos_x, pos_y, angle, width, length, height):
     hw = width / 2.0
     hl = length / 2.0
@@ -211,9 +199,6 @@ def project_cuboid(cam, car_x, car_y, car_theta, pos_x, pos_y, angle, width, len
     face_list.sort(key=lambda f: f[2], reverse=True)
     return face_list
 
-# ----------------------------------------------------------------------
-# Simulação interativa
-# ----------------------------------------------------------------------
 def interactive_simulation(r, b, dt, x0, y0, theta0):
     pygame.init()
     WIDTH, HEIGHT = 800, 600
@@ -355,7 +340,7 @@ def interactive_simulation(r, b, dt, x0, y0, theta0):
         cam_x, cam_y = adjust_camera(x, y, theta, desired_cam_dist, WALLS)
         cam3d.set_position(cam_x, cam_y)
 
-        # ================= RENDERIZAÇÃO =================
+        
         screen.fill((0,0,0))
         for i in range(cam3d.horizon_y):
             t = i / cam3d.horizon_y
@@ -429,7 +414,7 @@ def interactive_simulation(r, b, dt, x0, y0, theta0):
                 pygame.draw.polygon(screen, cor, pts)
                 pygame.draw.polygon(screen, (0,0,0), pts, 1)
 
-        # ---- Minimapa aprimorado ----
+      
         minimap_surf = pygame.Surface((MAP_WIDTH, MAP_HEIGHT))
         minimap_surf.fill((0, 0, 0))  # fundo preto opaco
         scale_x = MAP_WIDTH / (WORLD_X_MAX - WORLD_X_MIN)
@@ -445,17 +430,17 @@ def interactive_simulation(r, b, dt, x0, y0, theta0):
             p2 = world_to_map(wx2, wy2)
             pygame.draw.line(minimap_surf, (200, 200, 200), p1, p2, 2)
 
-        # Linha de chegada
+      
         p_start = world_to_map(FINISH_X, FINISH_Y_START)
         p_end = world_to_map(FINISH_X, FINISH_Y_END)
         pygame.draw.line(minimap_surf, (255, 255, 0), p_start, p_end, 2)
 
-        # Rastro
+      
         if len(trail) > 1:
             map_trail = [world_to_map(px, py) for px, py in trail]
             pygame.draw.lines(minimap_surf, (0, 200, 0), False, map_trail, 1)
 
-        # Carro (triângulo)
+       
         cx, cy = world_to_map(x, y)
         angle = -theta
         size = 5
@@ -467,7 +452,7 @@ def interactive_simulation(r, b, dt, x0, y0, theta0):
 
         screen.blit(minimap_surf, (MAP_X, MAP_Y))
 
-        # HUD
+        
         if command == 'stop':
             status = "Parado"
         elif command == 'straight':
@@ -506,9 +491,7 @@ def interactive_simulation(r, b, dt, x0, y0, theta0):
     pygame.quit()
     return trail, finish_crossed, collision
 
-# ----------------------------------------------------------------------
-# Entrada e gráfico final
-# ----------------------------------------------------------------------
+
 def main():
     print("Simulador interativo – Labirinto 3D com minimapa")
     print("Controles: setas, espaço, ESC")

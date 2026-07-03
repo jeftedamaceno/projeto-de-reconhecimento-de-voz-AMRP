@@ -1,4 +1,123 @@
-Timestamp,Nome_Arquivo,Classe_Alvo_Humana,Classe_Predita_IA,Confianca_IA,Entropia_Incerteza,Motivo_Falha,Energia_Sinal_RMS
-2026-07-01 17:20:03,ALVO_direita_PREDITO_pare_CONF_45_1782937203.wav,direita,pare,45.28%,1.5963,Erro de Classificacao,0.00198
-2026-07-01 17:20:31,ALVO_pare_PREDITO_direita_CONF_30_1782937231.wav,pare,direita,30.59%,2.0321,Erro de Classificacao,0.00079
-2026-07-01 17:20:48,ALVO_pare_PREDITO_pare_CONF_64_1782937248.wav,pare,pare,64.32%,1.6784,Baixa Confianca (<75%),0.01321
+Timestamp,Usuario,Nome_Arquivo,Classe_Alvo_Humana,Classe_Predita_IA,Confianca_IA,Entropia_Incerteza,Motivo_Falha,Energia_Sinal_RMS
+2026-07-02 19:46:41,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_90_1783032401.wav,siga,voltar,90.91%,0.6087,Erro de Classificacao,0.01598
+2026-07-02 19:47:30,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_54_1783032450.wav,siga,voltar,54.27%,1.8070,Erro de Classificacao,0.00719
+2026-07-02 19:52:26,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_63_1783032746.wav,siga,voltar,63.25%,1.6571,Erro de Classificacao,0.01235
+2026-07-02 19:54:46,pablo,USER_pablo_ALVO_siga_PREDITO_siga_CONF_49_1783032886.wav,siga,siga,49.02%,1.7335,Baixa Confianca (<75%),0.06403
+2026-07-02 19:55:10,pablo,USER_pablo_ALVO_siga_PREDITO_siga_CONF_70_1783032910.wav,siga,siga,70.02%,1.3658,Baixa Confianca (<75%),0.03973
+2026-07-02 19:55:19,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_54_1783032919.wav,siga,voltar,54.88%,1.7833,Erro de Classificacao,0.12900
+2026-07-02 19:55:35,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_37_1783032935.wav,siga,voltar,37.48%,1.9752,Erro de Classificacao,0.02780
+2026-07-02 19:56:17,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_49_1783032977.wav,siga,voltar,49.59%,1.9535,Erro de Classificacao,0.06351
+2026-07-02 19:56:38,pablo,USER_pablo_ALVO_siga_PREDITO_pare_CONF_62_1783032998.wav,siga,pare,62.11%,1.5949,Erro de Classificacao,0.06501
+2026-07-02 19:57:44,pablo,USER_pablo_ALVO_siga_PREDITO_voltar_CONF_67_1783033064.wav,siga,voltar,67.33%,1.5163,Erro de Classificacao,0.04007
+2026-07-02 19:58:08,pablo,USER_pablo_ALVO_siga_PREDITO_direita_CONF_63_1783033088.wav,siga,direita,63.76%,1.5954,Erro de Classificacao,0.04353
+2026-07-02 19:58:20,pablo,USER_pablo_ALVO_siga_PREDITO_esquerda_CONF_87_1783033100.wav,siga,esquerda,87.81%,0.7089,Erro de Classificacao,0.00088
+2026-07-02 19:58:53,pablo,USER_pablo_ALVO_siga_PREDITO_esquerda_CONF_69_1783033133.wav,siga,esquerda,69.64%,1.2986,Erro de Classificacao,0.08018
+2026-07-02 20:00:00,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_88_1783033200.wav,direita,pare,88.36%,0.7261,Erro de Classificacao,0.03036
+2026-07-02 20:00:13,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_67_1783033213.wav,direita,pare,67.01%,1.5554,Erro de Classificacao,0.05080
+2026-07-02 20:00:20,pablo,USER_pablo_ALVO_direita_PREDITO_siga_CONF_34_1783033220.wav,direita,siga,34.60%,2.1451,Erro de Classificacao,0.04201
+2026-07-02 20:00:27,pablo,USER_pablo_ALVO_direita_PREDITO_direita_CONF_42_1783033227.wav,direita,direita,42.33%,2.0457,Baixa Confianca (<75%),0.02801
+2026-07-02 20:00:33,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_55_1783033233.wav,direita,pare,55.55%,1.6056,Erro de Classificacao,0.02932
+2026-07-02 20:00:48,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_59_1783033248.wav,direita,pare,59.38%,1.3621,Erro de Classificacao,0.01948
+2026-07-02 20:00:55,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_57_1783033255.wav,direita,pare,57.88%,1.7932,Erro de Classificacao,0.04647
+2026-07-02 20:01:55,pablo,USER_pablo_ALVO_direita_PREDITO_voltar_CONF_75_1783033315.wav,direita,voltar,75.80%,1.2124,Erro de Classificacao,0.05986
+2026-07-02 20:02:03,pablo,USER_pablo_ALVO_direita_PREDITO_direita_CONF_51_1783033323.wav,direita,direita,51.59%,1.9170,Baixa Confianca (<75%),0.00802
+2026-07-02 20:02:33,pablo,USER_pablo_ALVO_direita_PREDITO_pare_CONF_67_1783033353.wav,direita,pare,67.20%,1.3827,Erro de Classificacao,0.03739
+2026-07-02 20:04:27,pablo,USER_pablo_ALVO_esquerda_PREDITO_pare_CONF_79_1783033467.wav,esquerda,pare,79.45%,1.0132,Erro de Classificacao,0.00092
+2026-07-02 20:04:57,pablo,USER_pablo_ALVO_esquerda_PREDITO_voltar_CONF_47_1783033497.wav,esquerda,voltar,47.79%,1.7689,Erro de Classificacao,0.04719
+2026-07-02 20:05:06,pablo,USER_pablo_ALVO_esquerda_PREDITO_siga_CONF_52_1783033506.wav,esquerda,siga,52.83%,1.8086,Erro de Classificacao,0.01453
+2026-07-02 20:05:13,pablo,USER_pablo_ALVO_esquerda_PREDITO_voltar_CONF_71_1783033513.wav,esquerda,voltar,71.29%,1.2395,Erro de Classificacao,0.03426
+2026-07-02 20:06:20,pablo,USER_pablo_ALVO_esquerda_PREDITO_voltar_CONF_78_1783033580.wav,esquerda,voltar,78.18%,1.0816,Erro de Classificacao,0.03071
+2026-07-02 20:06:29,pablo,USER_pablo_ALVO_esquerda_PREDITO_siga_CONF_35_1783033589.wav,esquerda,siga,35.67%,2.0928,Erro de Classificacao,0.03736
+2026-07-02 20:06:35,pablo,USER_pablo_ALVO_esquerda_PREDITO_esquerda_CONF_61_1783033595.wav,esquerda,esquerda,61.39%,1.4898,Baixa Confianca (<75%),0.03418
+2026-07-02 20:06:43,pablo,USER_pablo_ALVO_esquerda_PREDITO_esquerda_CONF_56_1783033603.wav,esquerda,esquerda,56.06%,1.7631,Baixa Confianca (<75%),0.07201
+2026-07-02 20:07:02,pablo,USER_pablo_ALVO_esquerda_PREDITO_esquerda_CONF_38_1783033622.wav,esquerda,esquerda,38.06%,2.0810,Baixa Confianca (<75%),0.03789
+2026-07-02 20:07:10,pablo,USER_pablo_ALVO_esquerda_PREDITO_esquerda_CONF_27_1783033630.wav,esquerda,esquerda,27.73%,2.2532,Baixa Confianca (<75%),0.04145
+2026-07-02 20:07:16,pablo,USER_pablo_ALVO_esquerda_PREDITO_voltar_CONF_66_1783033636.wav,esquerda,voltar,66.40%,1.4105,Erro de Classificacao,0.05548
+2026-07-02 20:07:37,pablo,USER_pablo_ALVO_esquerda_PREDITO_pare_CONF_53_1783033657.wav,esquerda,pare,53.65%,1.7809,Erro de Classificacao,0.02282
+2026-07-02 20:08:48,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_64_1783033728.wav,pare,pare,64.27%,1.3596,Baixa Confianca (<75%),0.09754
+2026-07-02 20:10:12,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_62_1783033812.wav,pare,pare,62.66%,1.3574,Baixa Confianca (<75%),0.01912
+2026-07-02 20:10:19,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_57_1783033819.wav,pare,pare,57.66%,1.3517,Baixa Confianca (<75%),0.04556
+2026-07-02 20:10:33,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_65_1783033833.wav,pare,pare,65.66%,1.3891,Baixa Confianca (<75%),0.02685
+2026-07-02 20:11:18,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_60_1783033878.wav,pare,pare,60.67%,1.6940,Baixa Confianca (<75%),0.04962
+2026-07-02 20:11:38,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_62_1783033898.wav,pare,pare,62.09%,1.6732,Baixa Confianca (<75%),0.00455
+2026-07-02 20:12:33,pablo,USER_pablo_ALVO_pare_PREDITO_voltar_CONF_47_1783033953.wav,pare,voltar,47.35%,2.0305,Erro de Classificacao,0.01842
+2026-07-02 20:13:35,pablo,USER_pablo_ALVO_pare_PREDITO_direita_CONF_89_1783034015.wav,pare,direita,89.97%,0.6596,Erro de Classificacao,0.02664
+2026-07-02 20:13:41,pablo,USER_pablo_ALVO_pare_PREDITO_direita_CONF_51_1783034021.wav,pare,direita,51.07%,1.7251,Erro de Classificacao,0.03101
+2026-07-02 20:13:56,pablo,USER_pablo_ALVO_pare_PREDITO_pare_CONF_52_1783034036.wav,pare,pare,52.21%,1.7939,Baixa Confianca (<75%),0.00139
+2026-07-02 20:14:32,pablo,USER_pablo_ALVO_pare_PREDITO_voltar_CONF_96_1783034072.wav,pare,voltar,96.05%,0.3150,Erro de Classificacao,0.01621
+2026-07-02 20:16:16,pablo,USER_pablo_ALVO_voltar_PREDITO_voltar_CONF_74_1783034176.wav,voltar,voltar,74.40%,1.1310,Baixa Confianca (<75%),0.01012
+2026-07-02 20:16:38,pablo,USER_pablo_ALVO_voltar_PREDITO_pare_CONF_84_1783034198.wav,voltar,pare,84.86%,0.8931,Erro de Classificacao,0.00417
+2026-07-02 20:17:04,pablo,USER_pablo_ALVO_voltar_PREDITO_voltar_CONF_55_1783034224.wav,voltar,voltar,55.76%,1.7199,Baixa Confianca (<75%),0.01888
+2026-07-02 20:17:27,pablo,USER_pablo_ALVO_voltar_PREDITO_pare_CONF_73_1783034247.wav,voltar,pare,73.01%,1.1492,Erro de Classificacao,0.01628
+2026-07-02 20:17:45,pablo,USER_pablo_ALVO_voltar_PREDITO_voltar_CONF_60_1783034265.wav,voltar,voltar,60.15%,1.3680,Baixa Confianca (<75%),0.01180
+2026-07-02 20:17:59,pablo,USER_pablo_ALVO_voltar_PREDITO_pare_CONF_53_1783034279.wav,voltar,pare,53.21%,1.9288,Erro de Classificacao,0.00357
+2026-07-02 20:18:11,pablo,USER_pablo_ALVO_voltar_PREDITO_esquerda_CONF_40_1783034291.wav,voltar,esquerda,40.14%,1.8711,Erro de Classificacao,0.01666
+2026-07-02 20:32:37,pablo,USER_pablo_ALVO_voltar_PREDITO_esquerda_CONF_88_1783035157.wav,voltar,esquerda,88.51%,0.6828,Erro de Classificacao,0.00343
+2026-07-02 20:44:20,pablo,USER_pablo_ALVO_voltar_PREDITO_pare_CONF_90_1783035860.wav,voltar,pare,90.37%,0.6147,Erro de Classificacao,0.01318
+2026-07-02 20:44:25,pablo,USER_pablo_ALVO_voltar_PREDITO_pare_CONF_66_1783035865.wav,voltar,pare,66.41%,1.2924,Erro de Classificacao,0.01362
+2026-07-02 20:44:38,pablo,USER_pablo_ALVO_voltar_PREDITO_voltar_CONF_49_1783035878.wav,voltar,voltar,49.76%,1.4752,Baixa Confianca (<75%),0.03405
+2026-07-03 07:50:41,jefte,USER_jefte_ALVO_direita_PREDITO_direita_CONF_74_RUIDO_nenhum_1783075841.wav,direita,direita,74.70%,1.2992,Baixa Confianca (<75%),0.00302
+2026-07-03 07:58:57,jefte,USER_jefte_ALVO_direita_PREDITO_pare_CONF_84_1783076337.wav,direita,pare,84.20%,0.9266,Erro de Classificacao,0.00470
+2026-07-03 08:03:25,jefte,USER_jefte_ALVO_direita_PREDITO_pare_CONF_81_1783076605.wav,direita,pare,81.11%,1.0393,Erro de Classificacao,0.00158
+2026-07-03 08:03:46,jefte,USER_jefte_ALVO_direita_PREDITO_siga_CONF_32_1783076626.wav,direita,siga,32.13%,2.1017,Erro de Classificacao,0.00212
+2026-07-03 08:04:10,jefte,USER_jefte_ALVO_direita_PREDITO_voltar_CONF_43_1783076650.wav,direita,voltar,43.24%,1.9416,Erro de Classificacao,0.00487
+2026-07-03 08:05:52,jefte,USER_jefte_ALVO_esquerda_PREDITO_siga_CONF_80_1783076752.wav,esquerda,siga,80.04%,1.0668,Erro de Classificacao,0.00831
+2026-07-03 08:06:10,jefte,USER_jefte_ALVO_esquerda_PREDITO_esquerda_CONF_43_1783076770.wav,esquerda,esquerda,43.03%,2.0406,Baixa Confianca (<75%),0.00979
+2026-07-03 08:06:30,jefte,USER_jefte_ALVO_esquerda_PREDITO_direita_CONF_41_1783076790.wav,esquerda,direita,41.70%,1.9737,Erro de Classificacao,0.00620
+2026-07-03 08:06:57,jefte,USER_jefte_ALVO_esquerda_PREDITO_direita_CONF_70_1783076817.wav,esquerda,direita,70.69%,1.1917,Erro de Classificacao,0.00725
+2026-07-03 08:08:20,jefte,USER_jefte_ALVO_esquerda_PREDITO_esquerda_CONF_41_1783076900.wav,esquerda,esquerda,41.23%,1.9129,Baixa Confianca (<75%),0.00288
+2026-07-03 08:11:50,jefte,USER_jefte_ALVO_siga_PREDITO_direita_CONF_44_1783077110.wav,siga,direita,44.64%,2.0365,Erro de Classificacao,0.00678
+2026-07-03 08:11:57,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_46_1783077117.wav,siga,siga,46.98%,1.5529,Baixa Confianca (<75%),0.00308
+2026-07-03 08:12:15,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_47_1783077135.wav,siga,siga,47.49%,1.5223,Baixa Confianca (<75%),0.00264
+2026-07-03 08:13:33,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_63_1783077213.wav,siga,siga,63.93%,1.3761,Baixa Confianca (<75%),0.00249
+2026-07-03 08:14:31,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_53_1783077271.wav,siga,siga,53.45%,1.7043,Baixa Confianca (<75%),0.00410
+2026-07-03 08:14:40,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_53_1783077280.wav,siga,siga,53.07%,1.5708,Baixa Confianca (<75%),0.00466
+2026-07-03 08:15:25,jefte,USER_jefte_ALVO_siga_PREDITO_siga_CONF_53_1783077325.wav,siga,siga,53.97%,1.8614,Baixa Confianca (<75%),0.00246
+2026-07-03 08:25:55,jefte,USER_jefte_ALVO_pare_PREDITO_voltar_CONF_39_1783077955.wav,pare,voltar,39.11%,1.9592,Erro de Classificacao,0.00113
+2026-07-03 08:38:13,jefte,USER_jefte_ALVO_voltar_PREDITO_voltar_CONF_48_1783078693.wav,voltar,voltar,48.52%,1.5406,Baixa Confianca (<75%),0.00451
+2026-07-03 08:38:24,jefte,USER_jefte_ALVO_voltar_PREDITO_pare_CONF_47_1783078704.wav,voltar,pare,47.64%,1.5076,Erro de Classificacao,0.00395
+2026-07-03 08:38:42,jefte,USER_jefte_ALVO_voltar_PREDITO_pare_CONF_66_1783078722.wav,voltar,pare,66.80%,1.4004,Erro de Classificacao,0.00541
+2026-07-03 08:38:50,jefte,USER_jefte_ALVO_voltar_PREDITO_pare_CONF_54_1783078730.wav,voltar,pare,54.86%,1.4698,Erro de Classificacao,0.00494
+2026-07-03 08:38:56,jefte,USER_jefte_ALVO_voltar_PREDITO_pare_CONF_70_1783078736.wav,voltar,pare,70.83%,1.2567,Erro de Classificacao,0.00732
+2026-07-03 08:39:44,jefte,USER_jefte_ALVO_voltar_PREDITO_direita_CONF_41_1783078784.wav,voltar,direita,41.21%,1.8011,Erro de Classificacao,0.00636
+2026-07-03 08:44:58,jefte,USER_jefte_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_90_1783079098.wav,oov_ruido_voltar,esquerda,90.07%,0.5944,Confundiu Ruido com Comando,0.01304
+2026-07-03 08:45:11,jefte,USER_jefte_ALVO_oov_ruido_voltar_PREDITO_pare_CONF_90_1783079111.wav,oov_ruido_voltar,pare,90.62%,0.6066,Confundiu Ruido com Comando,0.00479
+2026-07-03 09:25:41,kurt,USER_kurt_ALVO_direita_PREDITO_voltar_CONF_34_1783081541.wav,direita,voltar,34.54%,1.9387,Erro de Classificacao,0.00016
+2026-07-03 09:26:27,kurt,USER_kurt_ALVO_direita_PREDITO_pare_CONF_95_1783081587.wav,direita,pare,95.61%,0.3444,Erro de Classificacao,0.01148
+2026-07-03 09:26:57,kurt,USER_kurt_ALVO_direita_PREDITO_direita_CONF_70_1783081617.wav,direita,direita,70.03%,1.4506,Baixa Confianca (<75%),0.00428
+2026-07-03 09:28:29,kurt,USER_kurt_ALVO_direita_PREDITO_direita_CONF_57_1783081709.wav,direita,direita,57.20%,1.7735,Baixa Confianca (<75%),0.00986
+2026-07-03 09:31:37,kurt,USER_kurt_ALVO_direita_PREDITO_voltar_CONF_44_1783081897.wav,direita,voltar,44.86%,2.0612,Erro de Classificacao,0.00408
+2026-07-03 09:34:00,kurt,USER_kurt_ALVO_direita_PREDITO_siga_CONF_43_1783082040.wav,direita,siga,43.88%,1.6837,Erro de Classificacao,0.00554
+2026-07-03 09:35:27,kurt,USER_kurt_ALVO_direita_PREDITO_voltar_CONF_71_1783082127.wav,direita,voltar,71.14%,1.2053,Erro de Classificacao,0.02389
+2026-07-03 09:38:18,kurt,USER_kurt_ALVO_esquerda_PREDITO_direita_CONF_68_1783082298.wav,esquerda,direita,68.67%,1.3561,Erro de Classificacao,0.00689
+2026-07-03 09:38:33,kurt,USER_kurt_ALVO_esquerda_PREDITO_esquerda_CONF_60_1783082313.wav,esquerda,esquerda,60.19%,1.6562,Baixa Confianca (<75%),0.01039
+2026-07-03 09:38:45,kurt,USER_kurt_ALVO_esquerda_PREDITO_voltar_CONF_43_1783082325.wav,esquerda,voltar,43.23%,2.1114,Erro de Classificacao,0.00288
+2026-07-03 09:39:15,kurt,USER_kurt_ALVO_esquerda_PREDITO_esquerda_CONF_63_1783082355.wav,esquerda,esquerda,63.95%,1.1536,Baixa Confianca (<75%),0.01048
+2026-07-03 09:39:24,kurt,USER_kurt_ALVO_esquerda_PREDITO_voltar_CONF_75_1783082364.wav,esquerda,voltar,75.15%,1.2005,Erro de Classificacao,0.01952
+2026-07-03 09:41:03,kurt,USER_kurt_ALVO_siga_PREDITO_direita_CONF_42_1783082463.wav,siga,direita,42.48%,1.8335,Erro de Classificacao,0.00312
+2026-07-03 09:41:26,kurt,USER_kurt_ALVO_siga_PREDITO_voltar_CONF_67_1783082486.wav,siga,voltar,67.63%,1.4010,Erro de Classificacao,0.01993
+2026-07-03 09:41:47,kurt,USER_kurt_ALVO_siga_PREDITO_siga_CONF_41_1783082507.wav,siga,siga,41.56%,1.9603,Baixa Confianca (<75%),0.00870
+2026-07-03 09:42:06,kurt,USER_kurt_ALVO_siga_PREDITO_siga_CONF_43_1783082526.wav,siga,siga,43.96%,1.6419,Baixa Confianca (<75%),0.01403
+2026-07-03 09:46:22,kurt,USER_kurt_ALVO_siga_PREDITO_direita_CONF_37_1783082782.wav,siga,direita,37.22%,2.1196,Erro de Classificacao,0.00484
+2026-07-03 09:47:15,kurt,USER_kurt_ALVO_siga_PREDITO_direita_CONF_70_1783082835.wav,siga,direita,70.52%,1.3302,Erro de Classificacao,0.00704
+2026-07-03 09:47:57,kurt,USER_kurt_ALVO_siga_PREDITO_siga_CONF_43_1783082877.wav,siga,siga,43.79%,1.8028,Baixa Confianca (<75%),0.00419
+2026-07-03 09:51:32,kurt,USER_kurt_ALVO_pare_PREDITO_pare_CONF_54_1783083092.wav,pare,pare,54.93%,1.7929,Baixa Confianca (<75%),0.01564
+2026-07-03 09:52:21,kurt,USER_kurt_ALVO_pare_PREDITO_voltar_CONF_44_1783083141.wav,pare,voltar,44.27%,1.7082,Erro de Classificacao,0.01524
+2026-07-03 09:52:54,kurt,USER_kurt_ALVO_pare_PREDITO_siga_CONF_37_1783083174.wav,pare,siga,37.77%,2.0432,Erro de Classificacao,0.00183
+2026-07-03 09:54:07,kurt,USER_kurt_ALVO_pare_PREDITO_voltar_CONF_81_1783083248.wav,pare,voltar,81.11%,0.9889,Erro de Classificacao,0.00977
+2026-07-03 09:55:46,kurt,USER_kurt_ALVO_pare_PREDITO_direita_CONF_61_1783083346.wav,pare,direita,61.49%,1.4576,Erro de Classificacao,0.00559
+2026-07-03 09:56:26,kurt,USER_kurt_ALVO_voltar_PREDITO_voltar_CONF_52_1783083386.wav,voltar,voltar,52.16%,1.3945,Baixa Confianca (<75%),0.00521
+2026-07-03 09:56:38,kurt,USER_kurt_ALVO_voltar_PREDITO_pare_CONF_86_1783083398.wav,voltar,pare,86.03%,0.8151,Erro de Classificacao,0.01617
+2026-07-03 09:56:48,kurt,USER_kurt_ALVO_voltar_PREDITO_pare_CONF_55_1783083408.wav,voltar,pare,55.46%,1.5024,Erro de Classificacao,0.00326
+2026-07-03 09:57:43,kurt,USER_kurt_ALVO_voltar_PREDITO_pare_CONF_52_1783083463.wav,voltar,pare,52.06%,1.5447,Erro de Classificacao,0.00924
+2026-07-03 09:59:21,kurt,USER_kurt_ALVO_voltar_PREDITO_pare_CONF_69_1783083561.wav,voltar,pare,69.95%,1.3774,Erro de Classificacao,0.01313
+2026-07-03 10:00:23,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_siga_CONF_90_1783083623.wav,oov_ruido_voltar,siga,90.26%,0.6416,Confundiu Ruido com Comando,0.01023
+2026-07-03 10:00:30,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_siga_CONF_69_1783083630.wav,oov_ruido_voltar,siga,69.50%,1.3630,Confundiu Ruido com Comando,0.01080
+2026-07-03 10:01:18,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_38_1783083678.wav,oov_ruido_voltar,esquerda,38.91%,2.1185,Confundiu Ruido com Comando,0.00765
+2026-07-03 10:01:25,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_direita_CONF_98_1783083685.wav,oov_ruido_voltar,direita,98.04%,0.1763,Confundiu Ruido com Comando,0.01175
+2026-07-03 10:02:03,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_direita_CONF_77_1783083723.wav,oov_ruido_voltar,direita,77.81%,1.1823,Confundiu Ruido com Comando,0.00529
+2026-07-03 10:02:18,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_pare_CONF_43_1783083738.wav,oov_ruido_voltar,pare,43.71%,2.0142,Confundiu Ruido com Comando,0.00076
+2026-07-03 10:02:53,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_direita_CONF_52_1783083773.wav,oov_ruido_voltar,direita,52.95%,1.7244,Confundiu Ruido com Comando,0.00936
+2026-07-03 10:03:02,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_pare_CONF_95_1783083782.wav,oov_ruido_voltar,pare,95.56%,0.3461,Confundiu Ruido com Comando,0.00991
+2026-07-03 10:03:10,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_95_1783083790.wav,oov_ruido_voltar,esquerda,95.90%,0.3248,Confundiu Ruido com Comando,0.00547
+2026-07-03 10:03:17,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_87_1783083797.wav,oov_ruido_voltar,esquerda,87.91%,0.7569,Confundiu Ruido com Comando,0.00701

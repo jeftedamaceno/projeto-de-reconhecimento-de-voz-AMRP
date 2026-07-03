@@ -4,15 +4,18 @@ import time
 import csv
 import numpy as np
 import sounddevice as sd
+import tensorflow as tf
 from tensorflow.keras.models import load_model
+from tensorflow.keras.layers import Layer
+import keras
 import keyboard
+import soundfile as sf
 
 # --- CONFIGURAÇÕES DE INFRAESTRUTURA ---
 PASTA_EXPERIMENTO = "experimentos_ia"
-MODEL_PATH = os.path.join(PASTA_EXPERIMENTO, "modelo_crnn_otimizado_fonemas.h5")
-LABELS_PATH = os.path.join(PASTA_EXPERIMENTO, "labels_config.json")
+MODEL_PATH = os.path.join(PASTA_EXPERIMENTO, "modelo_hibrido_1s5_atencao.h5")
+LABELS_PATH = os.path.join(PASTA_EXPERIMENTO, "labels_1s5_atencao.json")
 
-# Pastas de Auditoria para o Aprendizado Ativo
 PASTA_AUDITORIA_ERROS = "auditoria_erros_reais"
 ARQUIVO_LOG_CSV = os.path.join(PASTA_AUDITORIA_ERROS, "relatorio_auditoria.csv")
 
@@ -20,58 +23,56 @@ os.makedirs(PASTA_AUDITORIA_ERROS, exist_ok=True)
 
 SAMPLE_RATE = 16000
 DURATION = 1.5         
-TARGET_SIZE = 128      
-THRESHOLD_CONFIAVEL = 0.75  # 75% conforme solicitado para o filtro estrito
+TOTAL_SAMPLES = int(SAMPLE_RATE * DURATION)  # 24.000 amostras
+THRESHOLD_CONFIAVEL = 0.75  
+
+# =====================================================================
+# DEFINIÇÃO DA CAMADA DE ATENÇÃO PERSONALIZADA (CUSTOM OBJECT)
+# =====================================================================
+@keras.saving.register_keras_serializable(package="Custom")
+class AttentionLayer(Layer):
+    def __init__(self, **kwargs):
+        super(AttentionLayer, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        self.W = self.add_weight(name="att_weight", shape=(input_shape[-1], 1),
+                                 initializer="normal", trainable=True)
+        self.b = self.add_weight(name="att_bias", shape=(input_shape[1], 1),
+                                 initializer="zeros", trainable=True)
+        super(AttentionLayer, self).build(input_shape)
+
+    def call(self, x):
+        et = tf.squeeze(tf.tanh(tf.matmul(x, self.W) + self.b), axis=-1)
+        at = tf.nn.softmax(et)
+        at = tf.expand_dims(at, axis=-1)
+        output = x * at
+        return tf.reduce_sum(output, axis=1)
+
+    def compute_output_shape(self, input_shape):
+        return (input_shape[0], input_shape[-1])
+
+    def get_config(self):
+        return super(AttentionLayer, self).get_config()
 
 def calcular_entropia_vetorial(probabilidades):
     return -np.sum(probabilidades * np.log2(probabilidades + 1e-9))
 
 # =====================================================================
-# EXTRAÇÃO E PROCESSAMENTO DE SINAL (CADÊNCIA RÍTMICA)
+# PIPELINE DE TRATAMENTO DIGITAL
 # =====================================================================
-def extrair_espectrograma_cadencia(audio, n_fft=512, hop_length=128):
-    janela = np.hanning(n_fft)
-    num_frames = 1 + (len(audio) - n_fft) // hop_length
-    if num_frames <= 0: return np.zeros((TARGET_SIZE, TARGET_SIZE))
-    
-    stft_matrix = []
-    for t in range(num_frames):
-        inicio = t * hop_length
-        fatia = audio[inicio:inicio + n_fft]
-        if len(fatia) < n_fft: 
-            fatia = np.pad(fatia, (0, n_fft - len(fatia)), 'constant')
-        stft_matrix.append(np.abs(np.fft.rfft(fatia * janela)))
-    
-    stft_matrix = np.array(stft_matrix).T  
-    envelope_modulacao = np.abs(np.diff(stft_matrix, axis=1))
-    envelope_modulacao = np.pad(envelope_modulacao, ((0, 0), (1, 0)), 'constant')
-    return np.log1p(envelope_modulacao * 8.0)
-
-def redimensionar_matriz_bilinear(matriz, target_size):
-    orig_h, orig_w = matriz.shape
-    if orig_h == 0 or orig_w == 0: return np.zeros((target_size, target_size))
-    grid_h = np.linspace(0, orig_h - 1, target_size)
-    grid_w = np.linspace(0, orig_w - 1, target_size)
-    y_b = grid_h.astype(np.int32)
-    y_a = np.minimum(y_b + 1, orig_h - 1)
-    x_e = grid_w.astype(np.int32)
-    x_d = np.minimum(x_e + 1, orig_w - 1)
-    dy = (grid_h - y_b)[:, None]
-    dx = (grid_w - x_e)[None, :]
-    return (1-dy)*(1-dx)*matriz[y_b[:,None], x_e] + (1-dy)*dx*matriz[y_b[:,None], x_d] + dy*(1-dx)*matriz[y_a[:,None], x_e] + dy*dx*matriz[y_a[:,None], x_d]
-
-def processar_audio_microfone(audio):
-    max_samples = int(SAMPLE_RATE * DURATION)
-    if len(audio) < max_samples:
-        audio = np.pad(audio, (0, max_samples - len(audio)), 'constant')
+def processar_audio_microfone_direto(audio):
+    if len(audio) < TOTAL_SAMPLES:
+        audio = np.pad(audio, (0, TOTAL_SAMPLES - len(audio)), 'constant')
     else:
-        audio = audio[:max_samples]
-    pico = np.max(np.abs(audio))
-    if pico > 1e-6: audio = audio / pico
-    
-    matriz_cadencia = extrair_espectrograma_cadencia(audio)
-    img = redimensionar_matriz_bilinear(matriz_cadencia, TARGET_SIZE)
-    return (img - np.mean(img)) / (np.std(img) + 1e-9)
+        audio = audio[:TOTAL_SAMPLES]
+        
+    desvio = np.std(audio)
+    if desvio > 1e-6:
+        audio_tratado = (audio - np.mean(audio)) / desvio
+    else:
+        audio_tratado = audio - np.mean(audio)
+        
+    return np.expand_dims(audio_tratado, axis=-1)
 
 # =====================================================================
 # GERENCIADOR DO RELATÓRIO METROLÓGICO (CSV)
@@ -81,61 +82,73 @@ def inicializar_csv():
         with open(ARQUIVO_LOG_CSV, mode='w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
             writer.writerow([
-                "Timestamp", "Nome_Arquivo", "Classe_Alvo_Humana", 
+                "Timestamp", "Usuario", "Nome_Arquivo", "Classe_Alvo_Humana", 
                 "Classe_Predita_IA", "Confianca_IA", "Entropia_Incerteza", 
                 "Motivo_Falha", "Energia_Sinal_RMS"
             ])
 
-def registrar_falha_csv(nome_arq, alvo, predito, conf, entropia, motivo, rms):
+def registrar_falha_csv(usuario, nome_arq, alvo, predito, conf, entropia, motivo, rms):
     with open(ARQUIVO_LOG_CSV, mode='a', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         writer.writerow([
-            time.strftime("%Y-%m-%d %H:%M:%S"), nome_arq, alvo, 
+            time.strftime("%Y-%m-%d %H:%M:%S"), usuario, nome_arq, alvo, 
             predito, f"{conf*100:.2f}%", f"{entropia:.4f}", motivo, f"{rms:.5f}"
         ])
 
 # =====================================================================
-# INICIALIZAÇÃO DO MODELO E LABELS
+# INICIALIZAÇÃO DO ECOSSISTEMA
 # =====================================================================
-print("🔄 Carregando ecossistema de Cadência (.keras)...")
+print("🔄 Carregando ecossistema Híbrido Temporal com Atenção (.h5)...")
 if not os.path.exists(MODEL_PATH) or not os.path.exists(LABELS_PATH):
-    raise FileNotFoundError("Modelo ou arquivo de labels ausente em 'experimentos_ia'.")
+    raise FileNotFoundError(f"Erro: Coloque os arquivos na pasta '{PASTA_EXPERIMENTO}'.")
 
-model = load_model(MODEL_PATH)
+custom_dict = {"AttentionLayer": AttentionLayer}
+model = load_model(MODEL_PATH, custom_objects=custom_dict)
+
 with open(LABELS_PATH, "r") as f:
     label_map = json.load(f)
 inv_map = {v: k for k, v in label_map.items()}
 inicializar_csv()
 
-# =====================================================================
-# LOOP DE CAPTURA COM HUMAN-IN-THE-LOOP
-# =====================================================================
-def executar_pipeline_coleta():
-    print("\n" + "═"*50)
-    print("📋 CLASSES DISPONÍVEIS:", ", ".join([c.upper() for c in label_map.keys()]))
-    classe_alvo = input("✍️ Digite qual classe você vai falar agora: ").strip().lower()
-    
-    if classe_alvo not in label_map:
-        print("❌ Classe inválida! Verifique a grafia correta.")
-        return
+# Detecta automaticamente o nome da classe de ruído/descarte do seu modelo
+CLASSE_RUIDO_MODELO = None
+for classe_possivel in ["ruido", "background", "silencio", "desconhecido"]:
+    if classe_possivel in label_map:
+        CLASSE_RUIDO_MODELO = classe_possivel
+        break
 
-    print(f"🎯 Pronto para falar: '{classe_alvo.upper()}'. Pressione [ G ] para iniciar a gravação...")
+if not CLASSE_RUIDO_MODELO:
+    # Se não achar nenhuma com esses nomes, assume a última classe do mapeamento como descarte
+    CLASSE_RUIDO_MODELO = list(label_map.keys())[-1]
+
+# =====================================================================
+# PIPELINE DE INFERÊNCIA E CAPTURA COLETIVA CONTÍNUA
+# =====================================================================
+def executar_pipeline_coleta(classe_alvo, usuario, modo_ruido_oov=False):
+    # Ajusta a exibição do alvo no terminal caso seja palavra fora do vocabulário
+    exibicao_alvo = "PALAVRA FORA DO VOCABULÁRIO (RUÍDO)" if modo_ruido_oov else classe_alvo.upper()
+    print(f"\n🎤 [PRONTO] Alvo: '{exibicao_alvo}'. Pressione [ G ] para gravar...")
     
     while True:
         if keyboard.is_pressed('g'):
+            while keyboard.is_pressed('g'):  
+                time.sleep(0.01)
             break
             
-    print("🎤 [GRAVANDO...] Fale agora!")
+    time.sleep(0.2)
+            
+    print("🔴 [GRAVANDO... Diga uma palavra qualquer!]" if modo_ruido_oov else "🔴 [GRAVANDO... Fale agora!]")
     audio_raw = sd.rec(int(DURATION * SAMPLE_RATE), samplerate=SAMPLE_RATE, channels=1, dtype='float32')
     sd.wait()
     audio = audio_raw.flatten()
     
-    # Métrica extra que julguei importante: Energia RMS do sinal capturado (detecta se o usuário falou muito baixo ou soprou)
-    energia_rms = np.sqrt(np.mean(audio**2))
+    # Calibração de Volume Corrigida (Ganho otimizado para 85%)
+    pico = np.max(np.abs(audio))
+    audio_salvamento = (audio / pico) * 0.85 if pico > 1e-6 else audio
     
-    print("🧠 Processando e inferindo textura...")
-    matriz_input = processar_audio_microfone(audio)
-    tensor_input = np.expand_dims(np.expand_dims(matriz_input, axis=-1), axis=0)
+    energia_rms = np.sqrt(np.mean(audio**2))
+    vetor_tratado = processar_audio_microfone_direto(audio_salvamento)
+    tensor_input = np.expand_dims(vetor_tratado, axis=0)
     
     predicoes = model.predict(tensor_input, verbose=0)[0]
     idx_vencedor = np.argmax(predicoes)
@@ -143,47 +156,83 @@ def executar_pipeline_coleta():
     entropia = calcular_entropia_vetorial(predicoes)
     classe_predita = inv_map[idx_vencedor]
     
-    # Critérios de Auditoria Estrita
-    errou_classe = (classe_predita != classe_alvo)
-    baixa_confianca = (confianca < THRESHOLD_CONFIAVEL)
+    # --- APLICAÇÃO DA LÓGICA DE DECISÃO DE SALVAMENTO ---
+    if modo_ruido_oov:
+        # No modo OOV, o 'acerto' esperado é a classe de ruído do modelo
+        errou_classe = (classe_predita != CLASSE_RUIDO_MODELO)
+        baixa_confianca = (confianca < THRESHOLD_CONFIAVEL)
+        log_alvo = f"oov_ruido_{CLASSE_RUIDO_MODELO}"
+    else:
+        errou_classe = (classe_predita != classe_alvo)
+        baixa_confianca = (confianca < THRESHOLD_CONFIAVEL)
+        log_alvo = classe_alvo
+
+    print(f"   🔹 Operador testou '{exibicao_alvo}' -> IA predisse '{classe_predita.upper()}' com {confianca*100:.1f}%")
     
-    print("\n" + "📊 RESULTADO DA INFERÊNCIA " + "═"*33)
-    print(f"   • Intenção Humana: {classe_alvo.upper()}")
-    print(f"   • Resposta da IA:  {classe_predita.upper()} ({confianca*100:.2f}% de certeza)")
-    print(f"   • Entropia Vetorial: {entropia:.3f}")
+    print("🔊 Reproduzindo áudio capturado...")
+    sd.play(audio_salvamento, SAMPLE_RATE)
+    sd.wait()
     
+    # Grava se confundir com outra classe OU se tiver certeza menor que 75%
     if errou_classe or baixa_confianca:
-        motivo = "Erro de Classificacao" if errou_classe else "Baixa Confianca (<75%)"
-        print(f"🚨 FALHA DETECTADA -> Motivo: {motivo}")
+        if modo_ruido_oov:
+            motivo = "Confundiu Ruido com Comando" if errou_classe else "Baixa Certeza no Ruido (<75%)"
+        else:
+            motivo = "Erro de Classificacao" if errou_classe else "Baixa Confianca (<75%)"
+            
+        print(f"   ⚠️ FALHA DETECTADA ({motivo}) -> Gravando áudio para auditoria...")
         
-        # Nomenclatura descritiva solicitada: ajuda a identificar instantaneamente o arquivo na pasta
         timestamp = int(time.time())
-        nome_arquivo = f"ALVO_{classe_alvo}_PREDITO_{classe_predita}_CONF_{int(confianca*100)}_{timestamp}.wav"
+        nome_arquivo = f"USER_{usuario}_ALVO_{log_alvo}_PREDITO_{classe_predita}_CONF_{int(confianca*100)}_{timestamp}.wav"
         caminho_wav = os.path.join(PASTA_AUDITORIA_ERROS, nome_arquivo)
         
-        # Como o sounddevice grava normalizado em float32, usamos a biblioteca para salvar direto sem wave overhead
-        import soundfile as sf
-        sf.write(caminho_wav, audio, SAMPLE_RATE)
-        
-        # Registra no livro de bordo CSV
-        registrar_falha_csv(nome_arquivo, classe_alvo, classe_predita, confianca, entropia, motivo, energia_rms)
-        print(f"💾 Áudio e métricas arquivados com sucesso em '{PASTA_AUDITORIA_ERROS}'!")
+        sf.write(caminho_wav, audio_salvamento, SAMPLE_RATE)
+        registrar_falha_csv(usuario, nome_arquivo, log_alvo, classe_predita, confianca, entropia, motivo, energia_rms)
     else:
-        print("✅ COMANDO PERFEITO! A IA acertou com alta confiança. (Nenhum arquivo foi armazenado)")
-        
-    print("═"*60)
-    print("\nPressione [ ENTER ] para nova captura ou [ Q ] para encerrar.")
+        print("   ✅ REJEIÇÃO PERFEITA! A IA identificou o ruído com segurança. (Áudio descartado)")
 
 def main():
     print("==========================================================")
-    print(" SISTEMA COLETOR DE AUDITORIA ATIVA - CADÊNCIA SILÁBICA ")
+    print("  SISTEMA DE AUDITORIA ATIVA - MODELO HÍBRIDO DE ATENÇÃO  ")
     print("==========================================================")
+    print(f"ℹ️ Classe de descarte mapeada pelo sistema: '{CLASSE_RUIDO_MODELO.upper()}'")
+    
+    usuario = input("👤 Identificação do Operador (Seu nome/Iniciais): ").strip().lower().replace(" ", "_")
+    if not usuario:
+        usuario = "anonimo"
+
     while True:
-        executar_pipeline_coleta()
-        opcao = input().strip().lower()
-        if opcao == 'q' or keyboard.is_pressed('q'):
+        print("\n" + "═"*50)
+        print("📋 CLASSES:", ", ".join([c.upper() for c in label_map.keys()]))
+        print("🔥 DIGITE 'ruido' PARA TESTAR PALAVRAS FORA DO VOCABULÁRIO (OOV)")
+        print("═"*50)
+        
+        classe_alvo = input("✍️ Selecione a classe (ou 'ruido', ou 'q' para sair): ").strip().lower()
+        
+        if classe_alvo == 'q':
             print("Encerrando coletor.")
             break
+            
+        modo_ruido_oov = (classe_alvo == 'ruido' and 'ruido' not in label_map) or (classe_alvo == 'ruido')
+        
+        # Se digitou 'ruido' mas a classe do JSON tem outro nome (ex: background), redirecionamos a lógica
+        if modo_ruido_oov:
+            print(f"\n🎯 Modo Estresse OOV iniciado. Diga palavras aleatórias (ex: carro, café, blabla).")
+        else:
+            if classe_alvo not in label_map:
+                print("❌ Classe inválida!")
+                continue
+            print(f"\n🎯 Modo contínuo iniciado para a classe '{classe_alvo.upper()}'.")
+            
+        print("Segure a tecla [ ESC ] logo após um resultado se quiser voltar ao menu.")
+        
+        while True:
+            executar_pipeline_coleta(classe_alvo, usuario, modo_ruido_oov=modo_ruido_oov)
+            
+            time.sleep(0.2)
+            if keyboard.is_pressed('esc'):
+                print("\n🔄 Voltando ao menu de seleção de classes...")
+                break
 
 if __name__ == "__main__":
     main()

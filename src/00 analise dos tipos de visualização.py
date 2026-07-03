@@ -14,9 +14,7 @@ CLASSES = ["direita", "esquerda", "siga", "pare", "voltar"]
 
 os.makedirs(PASTA_SAIDA, exist_ok=True)
 
-# ---------------------------------------------------------------------
-# PARTE 1: GERAR AS VISUALIZAÇÕES INDIVIDUAIS DE EXEMPLO (DO MODELO ANTIGO)
-# ---------------------------------------------------------------------
+
 print("🎬 Selecionando um áudio de exemplo para gerar os gráficos visuais...")
 audio_exemplo_path = None
 classe_exemplo = ""
@@ -108,9 +106,7 @@ plt.close()
 
 print("✅ Gráficos individuais salvos com sucesso!")
 
-# ---------------------------------------------------------------------
-# PARTE 2: ANÁLISE ESTATÍSTICA DE TODO O DATASET (MÉTRICAS COMPARATIVAS)
-# ---------------------------------------------------------------------
+
 print("\n🔄 Iniciando análise em lote de todo o dataset_final para gerar as estatísticas do relatório...")
 
 features_dict = {"Waveform": [], "Espectrograma Mel": [], "MFCCs": [], "Cadência e Ritmo": []}

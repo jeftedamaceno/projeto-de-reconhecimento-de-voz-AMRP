@@ -57,7 +57,7 @@ with open("labels_1s5_atencao.json", "w") as f:
     json.dump(label_map, f, indent=4)
 
 # =====================================================================
-# 3. PROCESSAMENTO MATEMÁTICO DE ÁUDIO MANUAL (SEM LIBROSA)
+# 3. PROCESSAMENTO MATEMÁTICO DE ÁUDIO MANUAL 
 # =====================================================================
 def carregar_wav_manual(file_path):
     """Lê arquivos WAV raw usando a biblioteca nativa wave e converte para float"""

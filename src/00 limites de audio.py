@@ -1,14 +1,36 @@
-
 import os
+import wave
 import numpy as np
-import librosa
 import matplotlib.pyplot as plt
 
 BASE_DIR = r"C:\Users\jefte\projetos em python\ufc 2025 a 2026\aprendizado de maquina\projeto de reconhecimento de voz AMRP"
 ORIGEM = os.path.join(BASE_DIR, "dataset_vozes_old")
 CLASSES = ["direita", "esquerda", "siga", "pare", "voltar"]
-EXTENSOES = (".wav", ".flac", ".ogg", ".m4a", ".mp3")
 SAMPLE_RATE = 16000
+
+def carregar_wav_manual(file_path):
+    with wave.open(file_path, 'rb') as wav_file:
+        n_channels = wav_file.getnchannels()
+        sampwidth = wav_file.getsampwidth()
+        sr = wav_file.getframerate()
+        n_frames = wav_file.getnframes()
+        raw_data = wav_file.readframes(n_frames)
+        
+        if sampwidth == 2:
+            audio_data = np.frombuffer(raw_data, dtype=np.int16).astype(np.float32) / 32768.0
+        elif sampwidth == 1:
+            audio_data = (np.frombuffer(raw_data, dtype=np.uint8).astype(np.float32) - 128.0) / 128.0
+        else:
+            raise ValueError("Suporta apenas arquivos WAV de 8-bit ou 16-bit PCM.")
+            
+        if n_channels > 1:
+            audio_data = audio_data.reshape(-1, n_channels).mean(axis=1)
+            
+        if sr != SAMPLE_RATE:
+            num_provisorio = int(len(audio_data) * SAMPLE_RATE / sr)
+            audio_data = np.interp(np.linspace(0, len(audio_data), num_provisorio), np.arange(len(audio_data)), audio_data)
+            
+        return audio_data
 
 def calcular_duracao_util_rms(audio, sr, frame_length=256, hop_length=128, threshold_db=-35):
     if len(audio) == 0:
@@ -47,32 +69,41 @@ def calcular_duracao_util_rms(audio, sr, frame_length=256, hop_length=128, thres
 duracoes_por_classe = {c: [] for c in CLASSES}
 todas_duracoes = []
 
-for raiz, diretorios, arquivos in os.walk(ORIGEM):
-    for arquivo in arquivos:
-        if arquivo.lower().endswith(EXTENSOES):
-            caminho_completo = os.path.join(raiz, arquivo)
-            nome_classe = None
+if not os.path.isdir(ORIGEM):
+    print(f"Diretorio raiz nao encontrado: {ORIGEM}")
+    exit()
+
+try:
+    for entrada_aluno in os.scandir(ORIGEM):
+        if entrada_aluno.is_dir():
+            caminho_aluno = entrada_aluno.path
             
-            for c in CLASSES:
-                if c in caminho_completo.lower() or c in arquivo.lower():
-                    nome_classe = c
-                    break
-                    
-            if nome_classe is None:
-                continue
+            for nome_classe in CLASSES:
+                caminho_classe = os.path.join(caminho_aluno, nome_classe)
                 
-            try:
-                audio, sr = librosa.load(caminho_completo, sr=SAMPLE_RATE)
-                
-                duracao_u = calcular_duracao_util_rms(audio, sr)
-                if duracao_u > 0:
-                    duracoes_por_classe[nome_classe].append(duracao_u)
-                    todas_duracoes.append(duracao_u)
-            except Exception as e:
-                print(f"Erro ao processar {arquivo}: {e}")
+                if os.path.isdir(caminho_classe):
+                    try:
+                        for entrada_arquivo in os.scandir(caminho_classe):
+                            if entrada_arquivo.is_file() and entrada_arquivo.name.lower().endswith(".wav"):
+                                caminho_completo = entrada_arquivo.path
+                                
+                                try:
+                                    audio = carregar_wav_manual(caminho_completo)
+                                    duracao_u = calcular_duracao_util_rms(audio, SAMPLE_RATE)
+                                    
+                                    if duracao_u > 0:
+                                        duracoes_por_classe[nome_classe].append(duracao_u)
+                                        todas_duracoes.append(duracao_u)
+                                except Exception as e:
+                                    continue
+                    except Exception as e:
+                        continue
+except Exception as e:
+    print(f"Erro ao acessar o diretorio raiz: {e}")
+    exit()
 
 if len(todas_duracoes) == 0:
-    print("Nenhum audio foi processado.")
+    print("Nenhum audio foi processado. Verifique a estrutura das pastas.")
     exit()
 
 media_geral = np.mean(todas_duracoes)
@@ -89,8 +120,8 @@ print(f"Percentil 99 (Seguranca maxima): {percentil_99:.2f}s")
 print("="*45 + "\n")
 
 plt.figure(figsize=(10, 6))
-
 cores = ['#3498db', '#e74c3c', '#2ecc71', '#f1c40f', '#9b59b6']
+
 for idx, c in enumerate(CLASSES):
     if len(duracoes_por_classe[c]) > 0:
         plt.hist(duracoes_por_classe[c], bins=15, alpha=0.5, 
@@ -105,7 +136,7 @@ plt.axvline(percentil_99, color='#c0392b', linestyle='-.', linewidth=2.5,
 plt.axvline(1.20, color='#7f8c8d', linestyle=':', linewidth=2.5, 
             label='Seu Cenario Atual (1.20s)')
 
-plt.title("Analise Estatistica Real: Tempo de Informacao Util por Classe", fontsize=14, fontweight='bold', pad=12)
+plt.title("Analyse Estatistica Real: Tempo de Informacao Util por Classe", fontsize=14, fontweight='bold', pad=12)
 plt.xlabel("Tempo (segundos)", fontsize=11)
 plt.ylabel("Frequencia (Quantidade de Audios)", fontsize=11)
 plt.grid(True, linestyle='--', alpha=0.4)
@@ -117,6 +148,5 @@ plt.gca().text(0.05, 0.95, texto_resumo, transform=plt.gca().transAxes, fontsize
 
 plt.legend(loc='upper right', frameon=True, fontsize=10)
 plt.tight_layout()
-
 plt.savefig("analise_limites_audio.png", dpi=300)
 plt.show()

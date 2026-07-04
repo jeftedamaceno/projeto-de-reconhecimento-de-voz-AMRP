@@ -68,4 +68,4 @@ for label in os.listdir(INPUT_DIR):
 
     print(f"Classe [{label}]: {contador} arquivos gerados ao todo.")
 
-print("\n🎉 Novo dataset aumentado criado com sucesso sem usar Librosa!")
+print("\n🎉 Novo dataset aumentado criado com sucesso")

@@ -1,1 +1,8 @@
-{"direita": 0, "esquerda": 1, "siga": 2, "pare": 3, "voltar": 4}
+{
+    "direita": 0,
+    "esquerda": 1,
+    "siga": 2,
+    "pare": 3,
+    "voltar": 4,
+    "ruido": 5
+}

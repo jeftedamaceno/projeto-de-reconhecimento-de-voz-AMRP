@@ -16,9 +16,9 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# =====================================================================
+
 # 1. CAMADA DE ATENÇÃO PERSONALIZADA (SERIALIZÁVEL)
-# =====================================================================
+
 @tf.keras.utils.register_keras_serializable(package="Custom")
 class AttentionLayer(tf.keras.layers.Layer):
     def __init__(self, **kwargs):
@@ -38,9 +38,9 @@ class AttentionLayer(tf.keras.layers.Layer):
     def get_config(self):
         return super(AttentionLayer, self).get_config()
 
-# =====================================================================
+
 # 2. CONFIGURAÇÕES E CAMINHOS ATUALIZADOS
-# =====================================================================
+
 BASE_DIR = r"C:\Users\jefte\projetos em python\ufc 2025 a 2026\aprendizado de maquina\projeto de reconhecimento de voz AMRP"
 # Atualizado para o novo nome da pasta do seu dataset
 AUDIO_ORIGINAL = os.path.join(BASE_DIR, "dataset_final")
@@ -56,9 +56,9 @@ label_map = {classe: idx for idx, classe in enumerate(CLASSES)}
 with open("labels_1s5_atencao.json", "w") as f:
     json.dump(label_map, f, indent=4)
 
-# =====================================================================
+
 # 3. PROCESSAMENTO MATEMÁTICO DE ÁUDIO MANUAL 
-# =====================================================================
+
 def carregar_wav_manual(file_path):
     """Lê arquivos WAV raw usando a biblioteca nativa wave e converte para float"""
     with wave.open(file_path, 'rb') as wav_file:
@@ -169,9 +169,9 @@ y_cat = to_categorical(y, num_classes=len(CLASSES))
 
 X_train, X_val, y_train, y_val = train_test_split(X, y_cat, test_size=0.2, random_state=42, stratify=y)
 
-# =====================================================================
+
 # 4. ARQUITETURA DO MODELO HÍBRIDO 1D (ADAPTADA PARA NUM_CLASSES)
-# =====================================================================
+
 def criar_modelo_hibrido_1s5(input_shape, num_classes):
     inputs = Input(shape=input_shape)
     
@@ -224,9 +224,9 @@ history = model.fit(
 
 model.save("modelo_hibrido_1s5_atencao.h5")
 
-# =====================================================================
+
 # 5. AVALIAÇÃO DE DESEMPENHO E RELATÓRIO DE CONFIANÇA
-# =====================================================================
+
 preds = model.predict(X_val)
 y_pred_labels = np.argmax(preds, axis=1)
 y_real_labels = np.argmax(y_val, axis=1)
@@ -244,9 +244,9 @@ print("="*50 + "\n")
 print("=== RELATÓRIO DE CLASSIFICAÇÃO ===")
 print(classification_report(y_real_labels, y_pred_labels, target_names=CLASSES))
 
-# =====================================================================
+
 # 6. GERAÇÃO E SALVAMENTO DE GRÁFICOS
-# =====================================================================
+
 # Gráfico 1: Curvas de Aprendizado
 plt.figure(figsize=(14, 5))
 plt.subplot(1, 2, 1)

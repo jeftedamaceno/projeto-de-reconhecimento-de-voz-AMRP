@@ -1,15 +1,39 @@
 import os
 import wave
+import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-BASE_DIR = r"C:\Users\jefte\projetos em python\ufc 2025 a 2026\aprendizado de maquina\projeto de reconhecimento de voz AMRP"
-ORIGEM = os.path.join(BASE_DIR, "dataset_vozes_old")
+# Configuração de caminhos usando Path (evita problemas com acentos)
+BASE_DIR = Path(r"C:\Users\jefte\projetos em python\ufc 2025 a 2026\aprendizado de maquina\projeto de reconhecimento de voz AMRP")
+ORIGEM = BASE_DIR / "dataset_vozes_old"
+
 CLASSES = ["direita", "esquerda", "siga", "pare", "voltar"]
+EXTENSOES = (".wav", ".flac", ".ogg", ".m4a", ".mp3")
 SAMPLE_RATE = 16000
 
+# Caminho para o FFmpeg idêntico ao seu script de tratamento
+FFMPEG_PATH = BASE_DIR / "ffmpeg-8.1-essentials_build" / "bin" / "ffmpeg.exe"
+
+def converter_para_wav_temp(caminho_entrada):
+    """Converte formatos m4a, mp3, ogg para um WAV temporário em 16kHz Mono usando FFmpeg"""
+    caminho_saida = caminho_entrada.with_name(caminho_entrada.name + "_temp.wav")
+    comando = [
+        str(FFMPEG_PATH), "-y",
+        "-i", str(caminho_entrada),
+        "-ac", "1",
+        "-ar", str(SAMPLE_RATE),
+        "-loglevel", "error",
+        str(caminho_saida)
+    ]
+    result = subprocess.run(comando, capture_output=True, text=True)
+    if result.returncode != 0:
+        return None
+    return caminho_saida
+
 def carregar_wav_manual(file_path):
-    with wave.open(file_path, 'rb') as wav_file:
+    with wave.open(str(file_path), 'rb') as wav_file:
         n_channels = wav_file.getnchannels()
         sampwidth = wav_file.getsampwidth()
         sr = wav_file.getframerate()
@@ -36,7 +60,8 @@ def calcular_duracao_util_rms(audio, sr, frame_length=256, hop_length=128, thres
     if len(audio) == 0:
         return 0
         
-    audio = audio / (np.max(np.abs(audio)) + 1e-8)
+    max_val = np.max(np.abs(audio))
+    audio = audio / (max_val + 1e-8)
     
     num_frames = int(np.floor((len(audio) - frame_length) / hop_length) + 1)
     if num_frames <= 0:
@@ -66,41 +91,52 @@ def calcular_duracao_util_rms(audio, sr, frame_length=256, hop_length=128, thres
     duracao = (amostra_fim - amostra_inicio) / sr
     return max(0.1, duracao)
 
+
 duracoes_por_classe = {c: [] for c in CLASSES}
 todas_duracoes = []
 
-if not os.path.isdir(ORIGEM):
+if not ORIGEM.is_dir():
     print(f"Diretorio raiz nao encontrado: {ORIGEM}")
     exit()
 
-try:
-    for entrada_aluno in os.scandir(ORIGEM):
-        if entrada_aluno.is_dir():
-            caminho_aluno = entrada_aluno.path
+# Varre a pasta de origem usando Path.iterdir() que preserva acentuações perfeitamente
+for entrada_aluno in ORIGEM.iterdir():
+    if entrada_aluno.is_dir():
+        
+        for nome_classe in CLASSES:
+            caminho_classe = entrada_aluno / nome_classe
             
-            for nome_classe in CLASSES:
-                caminho_classe = os.path.join(caminho_aluno, nome_classe)
-                
-                if os.path.isdir(caminho_classe):
-                    try:
-                        for entrada_arquivo in os.scandir(caminho_classe):
-                            if entrada_arquivo.is_file() and entrada_arquivo.name.lower().endswith(".wav"):
-                                caminho_completo = entrada_arquivo.path
-                                
-                                try:
-                                    audio = carregar_wav_manual(caminho_completo)
-                                    duracao_u = calcular_duracao_util_rms(audio, SAMPLE_RATE)
-                                    
-                                    if duracao_u > 0:
-                                        duracoes_por_classe[nome_classe].append(duracao_u)
-                                        todas_duracoes.append(duracao_u)
-                                except Exception as e:
+            if caminho_classe.is_dir():
+                for entrada_arquivo in caminho_classe.iterdir():
+                    if entrada_arquivo.is_file() and entrada_arquivo.suffix.lower() in EXTENSOES:
+                        
+                        caminho_processar = entrada_arquivo
+                        arquivo_temporario = None
+                        
+                        try:
+                            # Se não for WAV nativo, converte via FFmpeg antes de analisar
+                            if entrada_arquivo.suffix.lower() != ".wav":
+                                arquivo_temporario = converter_para_wav_temp(entrada_arquivo)
+                                if arquivo_temporario is None:
                                     continue
-                    except Exception as e:
-                        continue
-except Exception as e:
-    print(f"Erro ao acessar o diretorio raiz: {e}")
-    exit()
+                                caminho_processar = arquivo_temporario
+                            
+                            audio = carregar_wav_manual(caminho_processar)
+                            duracao_u = calcular_duracao_util_rms(audio, SAMPLE_RATE)
+                            
+                            if duracao_u > 0:
+                                duracoes_por_classe[nome_classe].append(duracao_u)
+                                todas_duracoes.append(duracao_u)
+                                
+                        except Exception as e:
+                            continue
+                        finally:
+                            # Garante a exclusão do arquivo temporário convertido
+                            if arquivo_temporario and arquivo_temporario.exists():
+                                try:
+                                    arquivo_temporario.unlink()
+                                except:
+                                    pass
 
 if len(todas_duracoes) == 0:
     print("Nenhum audio foi processado. Verifique a estrutura das pastas.")
@@ -136,7 +172,7 @@ plt.axvline(percentil_99, color='#c0392b', linestyle='-.', linewidth=2.5,
 plt.axvline(1.20, color='#7f8c8d', linestyle=':', linewidth=2.5, 
             label='Seu Cenario Atual (1.20s)')
 
-plt.title("Analyse Estatistica Real: Tempo de Informacao Util por Classe", fontsize=14, fontweight='bold', pad=12)
+plt.title("Análise Estatística Real: Tempo de Informação Útil por Classe", fontsize=14, fontweight='bold', pad=12)
 plt.xlabel("Tempo (segundos)", fontsize=11)
 plt.ylabel("Frequencia (Quantidade de Audios)", fontsize=11)
 plt.grid(True, linestyle='--', alpha=0.4)

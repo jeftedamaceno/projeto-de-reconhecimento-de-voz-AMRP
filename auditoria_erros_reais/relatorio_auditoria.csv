@@ -121,3 +121,7 @@ Timestamp,Usuario,Nome_Arquivo,Classe_Alvo_Humana,Classe_Predita_IA,Confianca_IA
 2026-07-03 10:03:02,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_pare_CONF_95_1783083782.wav,oov_ruido_voltar,pare,95.56%,0.3461,Confundiu Ruido com Comando,0.00991
 2026-07-03 10:03:10,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_95_1783083790.wav,oov_ruido_voltar,esquerda,95.90%,0.3248,Confundiu Ruido com Comando,0.00547
 2026-07-03 10:03:17,kurt,USER_kurt_ALVO_oov_ruido_voltar_PREDITO_esquerda_CONF_87_1783083797.wav,oov_ruido_voltar,esquerda,87.91%,0.7569,Confundiu Ruido com Comando,0.00701
+2026-07-04 15:32:24,jefte,USER_jefte_ALVO_esquerda_PREDITO_esquerda_CONF_67_1783189944.wav,esquerda,esquerda,67.34%,1.5047,Baixa Confianca (<75%),0.00308
+2026-07-04 15:32:46,jefte,USER_jefte_ALVO_esquerda_PREDITO_esquerda_CONF_28_1783189966.wav,esquerda,esquerda,28.12%,2.1014,Baixa Confianca (<75%),0.00665
+2026-07-04 15:33:35,jefte,USER_jefte_ALVO_esquerda_PREDITO_esquerda_CONF_60_1783190015.wav,esquerda,esquerda,60.68%,1.5675,Baixa Confianca (<75%),0.00639
+2026-07-04 15:33:49,jefte,USER_jefte_ALVO_esquerda_PREDITO_siga_CONF_71_1783190029.wav,esquerda,siga,71.48%,1.2136,Erro de Classificacao,0.00180

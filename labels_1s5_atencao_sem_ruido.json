@@ -1,0 +1,7 @@
+{
+    "direita": 0,
+    "esquerda": 1,
+    "siga": 2,
+    "pare": 3,
+    "voltar": 4
+}

@@ -36,7 +36,7 @@ def random_shift(audio, shift_max=0.1, sr=16000):
 def random_gain(audio, min_gain=0.7, max_gain=1.3):
     return audio * np.random.uniform(min_gain, max_gain)
 
-print("🚀 [ETAPA 1/4] Iniciando geração de ruídos multi-nível...")
+print(" [ETAPA 1/4] Iniciando geração de ruídos multi-nível...")
 
 def augment_audio_multinivel(audio):
     audios = []
@@ -85,10 +85,10 @@ if os.path.exists(INPUT_DIR):
     print(f"   -> {total_audios_originais} arquivos originais processados.")
     print(f"   -> {total_audios_com_ruido} arquivos totais gerados com aumento de dados.")
 else:
-    print(f"⚠️ Alerta: Pasta {INPUT_DIR} não encontrada.")
+    print(f" Alerta: Pasta {INPUT_DIR} não encontrada.")
 
 
-print("\n🔄 [ETAPA 2/4] Preparando matrizes espectrais para a IA...")
+print("\n[ETAPA 2/4] Preparando matrizes espectrais para a IA...")
 
 labels = sorted(os.listdir(INPUT_DIR)) if os.path.exists(INPUT_DIR) else []
 label_map = {label: i for i, label in enumerate(labels)}
@@ -179,7 +179,7 @@ if os.path.exists(OUTPUT_DIR):
         y_train_ruido = np.concatenate([y_train_ruido, np.array(y_aug)])
 
 # Contadores exatos de treino
-print(f"\n📊 CONTADORES OFICIAIS PARA O RELATÓRIO:")
+print(f"\n CONTADORES OFICIAIS PARA O RELATÓRIO:")
 print(f"   -> Quantidade de áudios usados na VALIDAÇÃO (Limpos): {len(X_val)}")
 print(f"   -> Quantidade de áudios usados no TREINAMETO COM RUÍDO COMPLETO: {len(X_train_ruido)}")
 
@@ -202,7 +202,7 @@ def criar_modelo_crnn():
         MaxPooling2D(2,2),
         Reshape(target_shape=(16, 16 * 64)), 
         
-        # SOLUÇÃO DO PROFESSOR: Bidirectional força a rede a ler do início-ao-fim E do fim-ao-início
+       
         Bidirectional(LSTM(64, return_sequences=False, dropout=0.4, recurrent_dropout=0.4)),
         
         BatchNormalization(),
@@ -213,7 +213,7 @@ def criar_modelo_crnn():
 
 
 def rodar_treino_federado(X_dados, y_dados, nome_experimento):
-    print(f"\n🌐 Executando Treino Colaborativo para: {nome_experimento}...")
+    print(f"\n Executando Treino Colaborativo para: {nome_experimento}...")
     model_fed = criar_modelo_crnn()
     model_fed.compile(optimizer='adam', loss=CategoricalCrossentropy(label_smoothing=0.08), metrics=['accuracy'])
     
@@ -243,7 +243,7 @@ modelo_limpo, acc_sem_ruido = rodar_treino_federado(X_train_limpo, y_train_limpo
 modelo_final, acc_com_ruido = rodar_treino_federado(X_train_ruido, y_train_ruido_cat, "Modelo COM Multi-Nível de Ruído")
 
 
-print("\n💾 Salvando arquivos finais na pasta de experimentos...")
+print("\n Salvando arquivos finais na pasta de experimentos...")
 modelo_final.save(os.path.join(PASTA_EXPERIMENTO, "modelo_crnn_cadencia_30_geracoes.h5"))
 with open(os.path.join(PASTA_EXPERIMENTO, "labels_config.json"), "w") as f:
     json.dump(label_map, f)
@@ -263,5 +263,5 @@ caminho_impacto = os.path.join(PASTA_EXPERIMENTO, "impacto_do_ruido_no_modelo.pn
 plt.savefig(caminho_impacto)
 plt.close()
 
-print(f"\n🎉 PIPELINE CORRIGIDO COM SUCESSO!")
-print(f"➡️ Gráfico de impacto salvo em: '{caminho_impacto}'")
+print(f"\n PIPELINE CORRIGIDO COM SUCESSO!")
+print(f" Gráfico de impacto salvo em: '{caminho_impacto}'")

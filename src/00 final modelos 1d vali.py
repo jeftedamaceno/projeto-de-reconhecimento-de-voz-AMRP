@@ -29,7 +29,7 @@ class AttentionLayer(tf.keras.layers.Layer):
 # 1. PARÂMETROS E CARREGAMENTO
 # ==========================================
 SAMPLE_RATE = 16000
-DURATION = 1.5  # 1 segundo
+DURATION = 1  # 1 segundo
 CHANNELS = 1     # Mono
 
 print("Carregando o modelo híbrido...")
@@ -98,8 +98,9 @@ while True:
             audio_preprocessed = audio_int16
             
         # Formata para a entrada do modelo: (1, 16000, 1)
-        audio_input = np.expand_dims(audio_preprocessed, axis=(0, -1))
-        
+        # audio_input = np.expand_dims(audio_preprocessed, axis=(0, -1))
+        # Garante o formato exato (1, 16000, 1) exigido pela entrada do modelo
+        audio_input = audio_preprocessed.reshape(1, SAMPLE_RATE, 1)
         # Executa a predição
         predicoes = model.predict(audio_input, verbose=0)
         classe_index = np.argmax(predicoes[0])

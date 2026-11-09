@@ -3,6 +3,13 @@
 /ruido_raw/
 /dataset_wav/
 /dataset_ruido/
+/dataset_sintetico_comparacao/
+/dataset_sintetico_multirota/
+/dataset_hibrido_fitas/
+/dataset_hibrido_avancado/
+/dataset_340/
+/dataset_real_pista/
+/dataset_processado_340/
 /auditoria_erros_reais
 /audios_ia
 /dataset_aumentado/

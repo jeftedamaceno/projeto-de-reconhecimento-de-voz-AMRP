@@ -1,0 +1,218 @@
+// --- CONFIGURAÇÃO DA PONTE H ---
+#define IN1 5
+#define IN2 6
+#define IN3 9
+#define IN4 10
+
+// --- CONFIGURAÇÃO DOS SENSORES ---
+#define ENC_ESQ 2         
+#define ENC_DIR 3         
+#define BUZZER 4          
+#define TRIG 7            
+#define ECHO 8            
+#define LED_VERDE 11      
+#define LED_AMARELO 12    
+#define LED_VERMELHO 13   
+
+// --- CONFIGURAÇÃO DO PID E VELOCIDADE ---
+int LIMITE_VELOCIDADE = 255; 
+
+int alvoVelEsq = 0;
+int alvoVelDir = 0;
+
+const int PULSOS_POR_CICLO_MAXIMO = 15; 
+float kp = 5.0;  
+float ki = 2.0;  
+
+float somaErroEsq = 0;
+int pwmEsq = 0;
+float somaErroDir = 0;
+int pwmDir = 0;
+
+volatile unsigned long contadorEsq = 0;
+volatile unsigned long contadorDir = 0;
+
+unsigned long tempoAnteriorSemaforo = 0;
+unsigned long tempoAnteriorPID = 0;
+const int INTERVALO_SEMAFORO = 60;
+const int INTERVALO_PID = 50;       
+
+volatile int distanciaAtual = 999;
+
+void setup() {
+  Serial.begin(115200); 
+  
+  pinMode(IN1, OUTPUT); pinMode(IN2, OUTPUT);
+  pinMode(IN3, OUTPUT); pinMode(IN4, OUTPUT);
+  
+  pinMode(LED_VERDE, OUTPUT); pinMode(LED_AMARELO, OUTPUT);
+  pinMode(LED_VERMELHO, OUTPUT); pinMode(BUZZER, OUTPUT);
+  
+  pinMode(TRIG, OUTPUT); pinMode(ECHO, INPUT);
+
+  pinMode(ENC_ESQ, INPUT_PULLUP); pinMode(ENC_DIR, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(ENC_ESQ), contarEsquerda, RISING);
+  attachInterrupt(digitalPinToInterrupt(ENC_DIR), contarDireita, RISING);
+
+  pararMotores();
+}
+
+void loop() {
+  // 1. ESCUTA A RASPBERRY PI
+  if (Serial.available() > 0) {
+    String mensagem = Serial.readStringUntil('\n');
+
+    int posF = mensagem.indexOf('F');
+    int posT = mensagem.indexOf('T');
+    int posD = mensagem.indexOf('D');
+    int posE = mensagem.indexOf('E');
+
+    if (posF >= 0 && posT >= 0 && posD >= 0 && posE >= 0) {
+      int F = mensagem.substring(posF + 1, posT).toInt();
+      int T = mensagem.substring(posT + 1, posD).toInt();
+      int D = mensagem.substring(posD + 1, posE).toInt();
+      int E = mensagem.substring(posE + 1).toInt();
+
+      calcularIA_Direcao(F, T, D, E);
+      
+      // Resposta imediata para validação do benchmark de latência
+      Serial.println("OK");
+    }
+  }
+
+  unsigned long tempoAtual = millis();
+
+  // 2. ATUALIZA O SEMÁFORO E VERIFICA COLISÃO
+  if (tempoAtual - tempoAnteriorSemaforo >= INTERVALO_SEMAFORO) {
+    tempoAnteriorSemaforo = tempoAtual;
+    atualizarSemaforo();
+  }
+
+  // 3. EXECUTA O CÉREBRO PID
+  if (tempoAtual - tempoAnteriorPID >= INTERVALO_PID) {
+    tempoAnteriorPID = tempoAtual;
+    atualizarPID();
+  }
+}
+
+void contarEsquerda() { contadorEsq++; }
+void contarDireita() { contadorDir++; }
+
+void calcularIA_Direcao(int frente, int tras, int direita, int esquerda) {
+  int eixoY = frente - tras;       
+  float fatorCurva = map(abs(eixoY), 0, 255, 100, 40) / 100.0; 
+  int eixoX = (esquerda - direita) * fatorCurva;  
+
+  alvoVelEsq = eixoY + eixoX;
+  alvoVelDir = eixoY - eixoX;
+
+  if (distanciaAtual <= 30 && distanciaAtual > 10) {
+    alvoVelEsq = alvoVelEsq * 0.5;
+    alvoVelDir = alvoVelDir * 0.5;
+  }
+
+  alvoVelEsq = constrain(alvoVelEsq, -LIMITE_VELOCIDADE, LIMITE_VELOCIDADE);
+  alvoVelDir = constrain(alvoVelDir, -LIMITE_VELOCIDADE, LIMITE_VELOCIDADE);
+}
+
+void atualizarPID() {
+  noInterrupts();
+  int pulsosEsq = contadorEsq; int pulsosDir = contadorDir;
+  contadorEsq = 0; contadorDir = 0;
+  interrupts();
+
+  int setpointEsq = map(abs(alvoVelEsq), 0, 255, 0, PULSOS_POR_CICLO_MAXIMO);
+  int setpointDir = map(abs(alvoVelDir), 0, 255, 0, PULSOS_POR_CICLO_MAXIMO);
+
+  if (alvoVelEsq == 0) {
+    pwmEsq = 0; somaErroEsq = 0;
+  } else {
+    int erroEsq = setpointEsq - pulsosEsq;
+    somaErroEsq += erroEsq;
+    somaErroEsq = constrain(somaErroEsq, -100, 100);
+    pwmEsq = constrain((kp * erroEsq) + (ki * somaErroEsq), 0, LIMITE_VELOCIDADE);
+  }
+
+  if (alvoVelDir == 0) {
+    pwmDir = 0; somaErroDir = 0;
+  } else {
+    int erroDir = setpointDir - pulsosDir;
+    somaErroDir += erroDir;
+    somaErroDir = constrain(somaErroDir, -100, 100);
+    pwmDir = constrain((kp * erroDir) + (ki * somaErroDir), 0, LIMITE_VELOCIDADE);
+  }
+
+  aplicarPotenciaMotores();
+}
+
+void aplicarPotenciaMotores() {
+  if (pwmEsq == 0) {
+    digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
+  } else if (alvoVelEsq > 0) { 
+    analogWrite(IN3, pwmEsq); digitalWrite(IN4, LOW);
+  } else { 
+    digitalWrite(IN3, LOW); analogWrite(IN4, pwmEsq);
+  }
+
+  if (pwmDir == 0) {
+    digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
+  } else if (alvoVelDir > 0) { 
+    analogWrite(IN1, pwmDir); digitalWrite(IN2, LOW);
+  } else { 
+    digitalWrite(IN1, LOW); analogWrite(IN2, pwmDir);
+  }
+}
+
+void atualizarSemaforo() {
+  digitalWrite(TRIG, LOW); delayMicroseconds(2);
+  digitalWrite(TRIG, HIGH); delayMicroseconds(10);
+  digitalWrite(TRIG, LOW);
+  
+  long duracao = pulseIn(ECHO, HIGH, 20000); 
+  distanciaAtual = (duracao > 0) ? (duracao * 0.034 / 2) : 999; 
+
+  if (distanciaAtual > 30) {
+    digitalWrite(LED_VERDE, HIGH); digitalWrite(LED_AMARELO, LOW);
+    digitalWrite(LED_VERMELHO, LOW); digitalWrite(BUZZER, LOW);
+  } 
+  else if (distanciaAtual <= 30 && distanciaAtual > 10) {
+    digitalWrite(LED_VERDE, LOW); digitalWrite(LED_AMARELO, HIGH);
+    digitalWrite(LED_VERMELHO, LOW); digitalWrite(BUZZER, LOW);
+  } 
+  else {
+    digitalWrite(LED_VERDE, LOW); digitalWrite(LED_AMARELO, LOW);
+    digitalWrite(LED_VERMELHO, HIGH); digitalWrite(BUZZER, HIGH); 
+    executarManobraEvasiva();
+  }
+}
+
+void executarManobraEvasiva() {
+  alvoVelEsq = 0; alvoVelDir = 0;
+  digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
+  delay(200); 
+
+  digitalWrite(IN1, LOW); analogWrite(IN2, 180);
+  digitalWrite(IN3, LOW); analogWrite(IN4, 180);
+  delay(600); 
+
+  analogWrite(IN1, 180); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW); analogWrite(IN4, 180);
+  delay(400); 
+
+  digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
+  digitalWrite(BUZZER, LOW);
+  
+  while(Serial.available() > 0) {
+    Serial.read();
+  }
+  
+  somaErroEsq = 0; somaErroDir = 0;
+  contadorEsq = 0; contadorDir = 0;
+}
+
+void pararMotores() {
+  digitalWrite(IN1, LOW); digitalWrite(IN2, LOW);
+  digitalWrite(IN3, LOW); digitalWrite(IN4, LOW);
+}

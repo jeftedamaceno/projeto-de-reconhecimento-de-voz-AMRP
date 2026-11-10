@@ -4,14 +4,14 @@ import time
 import os
 import matplotlib.pyplot as plt
 
-# ============================================================
-# 1. CONFIGURAÇÕES E PARÂMETROS
-# ============================================================
+
+
+
 VIDEO_ENTRADA = "pontilhado2.mp4"
 VIDEO_SAIDA = "resultado_3_metodos.mp4"
 LARGURA_PROC, ALTURA_PROC = 128, 128
 
-# Configuração de velocidade: 1 para processar TODOS os frames, 2 para pular de 2 em 2
+
 PULAR_FRAMES = 1
 
 LIMIAR_ESCURIDAO = 75
@@ -26,23 +26,23 @@ CLASSES_CNN = [
     "Cruzamento_4Pistas", "Sem_Caminho"
 ]
 
-# ============================================================
-# 2. VERIFICAÇÃO E CARREGAMENTO DOS MODELOS
-# ============================================================
+
+
+
 model_cnn = None
 model_hibrido = None
 
 try:
     import tensorflow as tf
     
-    # Modelo 1: Classificador CNN
+ 
     if os.path.exists("modelo_sintetico_comparacao.h5"):
         model_cnn = tf.keras.models.load_model("modelo_sintetico_comparacao.h5")
         print("[OK] Modelo M1 (CNN Classificador) encontrado e carregado.")
     else:
         print("[ALERTA] 'modelo_sintetico_comparacao.h5' não encontrado! M1 funcionará como N/A.")
 
-    # Modelo 3: Segmentador Híbrido
+    
     if os.path.exists("modelo_hibrido_segmentador.h5"):
         model_hibrido = tf.keras.models.load_model("modelo_hibrido_segmentador.h5")
         print("[OK] Modelo M3 (Segmentador Híbrido) encontrado e carregado.")
@@ -52,9 +52,8 @@ try:
 except Exception as e:
     print(f"[ERRO] Falha ao inicializar o TensorFlow: {e}")
 
-# ============================================================
-# 3. GEOMETRIA E SEGMENTAÇÃO BASE DA PISTA
-# ============================================================
+
+
 def calcular_geometria_roi(binaria_img):
     mascara_roi = np.zeros_like(binaria_img)
     pts_roi = np.array([
@@ -76,7 +75,7 @@ def calcular_geometria_roi(binaria_img):
 
     fechada = cv2.morphologyEx(bin_filtrada, cv2.MORPH_CLOSE, np.ones((3, 3), np.uint8))
 
-    # Região superior (fundo)
+    
     sub_fundo = fechada[int(ALTURA_PROC * 0.40):int(ALTURA_PROC * 0.60), :]
     num_sub, _, stats_sub, centroides_sub = cv2.connectedComponentsWithStats(sub_fundo, connectivity=8)
 
@@ -87,7 +86,7 @@ def calcular_geometria_roi(binaria_img):
             cy = int(centroides_sub[i][1]) + int(ALTURA_PROC * 0.40)
             ramos_topo.append((cx, cy))
 
-    # Região inferior (próximo ao robô)
+    
     sub_base = fechada[int(ALTURA_PROC * 0.75):ALTURA_PROC, :]
     M_base = cv2.moments(sub_base)
 
@@ -125,9 +124,9 @@ def calcular_geometria_roi(binaria_img):
     angulo_principal = angulos[0] if len(angulos) > 0 else 0.0
     return classe, angulo_principal, fechada, pt_base, ramos_topo
 
-# ============================================================
-# 4. EXECUÇÃO DOS MÉTODOS
-# ============================================================
+
+
+
 def executar_metodo_1(binaria_img):
     if model_cnn is None:
         return "N/A"
@@ -157,9 +156,9 @@ def executar_metodo_3(frame_rgb):
     binaria_ia = ((pred_mask > 0.3).astype(np.uint8)) * 255
     return calcular_geometria_roi(binaria_ia)
 
-# ============================================================
-# 5. ABERTURA E GRAVAÇÃO DO VÍDEO (COMPATÍVEL COM WINDOWS)
-# ============================================================
+
+
+
 cap = cv2.VideoCapture(VIDEO_ENTRADA)
 if not cap.isOpened():
     raise FileNotFoundError(f"Vídeo de entrada não encontrado: {VIDEO_ENTRADA}")
@@ -168,7 +167,7 @@ fps = cap.get(cv2.CAP_PROP_FPS)
 if fps is None or fps <= 0:
     fps = 30.0
 
-# Gravador usando Codec XVID totalmente compatível com Windows
+
 fourcc = cv2.VideoWriter_fourcc(*"XVID")
 out = cv2.VideoWriter(VIDEO_SAIDA, fourcc, fps, (768, 256), True)
 
@@ -197,60 +196,59 @@ while True:
     frame_red = cv2.resize(frame, (LARGURA_PROC, ALTURA_PROC))
     frame_rgb = cv2.cvtColor(frame_red, cv2.COLOR_BGR2RGB)
 
-    # 1. Executa M2 (Lógica Geométrica)
+   
     t0 = time.time()
     c_m2, a_m2, bin_m2, pt_base_m2, ramos_m2 = executar_metodo_2(frame_red)
     t_m2 = (time.time() - t0) * 1000
     tempos_m2.append(t_m2)
     angulos_m2.append(a_m2)
 
-    # 2. Executa M1 (Passando a imagem binarizada do M2)
+   
     t0 = time.time()
     c_m1 = executar_metodo_1(bin_m2)
     t_m1 = (time.time() - t0) * 1000
     tempos_m1.append(t_m1)
 
-    # 3. Executa M3 (Híbrido)
+    
     t0 = time.time()
     c_m3, a_m3, bin_m3, pt_base_m3, ramos_m3 = executar_metodo_3(frame_rgb)
     t_m3 = (time.time() - t0) * 1000
     tempos_m3.append(t_m3)
     angulos_m3.append(a_m3)
 
-    # ---------------- MONTAGEM DOS PAINÉIS DE VÍDEO ----------------
+  
     p1 = frame_red.copy()
     p2 = cv2.cvtColor(bin_m2, cv2.COLOR_GRAY2BGR)
     p3 = cv2.cvtColor(bin_m3, cv2.COLOR_GRAY2BGR)
 
-    # Desenho no Painel 2 (Lógica)
+  
     if pt_base_m2 is not None:
         cv2.circle(p2, pt_base_m2, 3, (0, 0, 255), -1)
         for pt in ramos_m2:
             cv2.circle(p2, pt, 3, (0, 255, 0), -1)
             cv2.line(p2, pt_base_m2, pt, (0, 255, 255), 2)
 
-    # Desenho no Painel 3 (Híbrido)
+    
     if pt_base_m3 is not None:
         cv2.circle(p3, pt_base_m3, 3, (0, 0, 255), -1)
         for pt in ramos_m3:
             cv2.circle(p3, pt, 3, (0, 255, 0), -1)
             cv2.line(p3, pt_base_m3, pt, (0, 255, 255), 2)
 
-    # Legendas sobrepostas
     cv2.putText(p1, f"M1: {c_m1}", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 0), 1)
     cv2.putText(p2, f"M2: {c_m2} ({a_m2:.1f}d)", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 255), 1)
     cv2.putText(p3, f"M3: {c_m3} ({a_m3:.1f}d)", (5, 15), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (255, 100, 255), 1)
 
-    # Concatenação e gravação
+
     painel_ampliado = cv2.resize(np.hstack((p1, p2, p3)), (768, 256), interpolation=cv2.INTER_NEAREST)
     out.write(painel_ampliado)
 
 cap.release()
 out.release()
 
-# ============================================================
-# 6. GRÁFICOS COMPARATIVOS
-# ============================================================
+
+
+
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 
 axes[0].plot(tempos_m1, label=f"M1: CNN Classificacao ({np.mean(tempos_m1):.1f}ms)", color="green", alpha=0.7)

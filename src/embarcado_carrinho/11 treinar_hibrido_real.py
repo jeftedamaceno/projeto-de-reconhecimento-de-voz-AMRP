@@ -10,7 +10,7 @@ DIR_IMAGES = "dataset_real_pista/images"
 DIR_MASKS = "dataset_real_pista/masks"
 MODELO_SAIDA = "modelo_hibrido_segmentador.h5"
 
-# Loss Dice para pequenas áreas de fita
+
 def dice_loss(y_true, y_pred):
     smooth = 1.0
     y_true_f = K.flatten(y_true)
@@ -36,20 +36,19 @@ Y = np.array(Y, dtype=np.float32)
 
 print(f"[INFO] Dataset carregado: {X.shape[0]} amostras reais.")
 
-# Data Augmentation Espacial (Gira, deforma e altera perspectiva para cobrir qualquer inclinação)
+
 data_augmentation = tf.keras.Sequential([
-    layers.RandomRotation(0.5, fill_mode='reflect'), # Rotações arbitrárias de fitas
-    layers.RandomZoom(0.2, fill_mode='reflect'),     # Variações de tamanho/distância
+    layers.RandomRotation(0.5, fill_mode='reflect'), 
+    layers.RandomZoom(0.2, fill_mode='reflect'),     
     layers.RandomTranslation(0.1, 0.1, fill_mode='reflect')
 ])
 
 def construir_unet_real(input_shape=(128, 128, 3)):
     inputs = layers.Input(shape=input_shape)
-    
-    # Camada de Augmentação integrada no treino
+   
     aug = data_augmentation(inputs)
 
-    # Encoder
+
     c1 = layers.Conv2D(16, (3, 3), activation='relu', padding='same')(aug)
     c1 = layers.BatchNormalization()(c1)
     p1 = layers.MaxPooling2D((2, 2))(c1)
@@ -58,10 +57,10 @@ def construir_unet_real(input_shape=(128, 128, 3)):
     c2 = layers.BatchNormalization()(c2)
     p2 = layers.MaxPooling2D((2, 2))(c2)
 
-    # Bottleneck
+
     b = layers.Conv2D(64, (3, 3), activation='relu', padding='same')(p2)
 
-    # Decoder
+
     u1 = layers.UpSampling2D((2, 2))(b)
     concat1 = layers.Concatenate()([u1, c2])
     d1 = layers.Conv2D(32, (3, 3), activation='relu', padding='same')(concat1)

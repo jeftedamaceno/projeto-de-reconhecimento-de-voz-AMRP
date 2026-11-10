@@ -3,7 +3,7 @@ import os
 
 VIDEOS = ["pontilhado.mp4", "pontilhado2.mp4"]
 PASTA_SAIDA = "dataset_real_pista/images"
-INTERVALO_FRAMES = 12 # Extrai 1 frame a cada 12 (evita redundância)
+INTERVALO_FRAMES = 12
 
 os.makedirs(PASTA_SAIDA, exist_ok=True)
 contador_salvos = 0
